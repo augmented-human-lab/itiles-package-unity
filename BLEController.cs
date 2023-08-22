@@ -1,6 +1,5 @@
 using UnityEngine;
 using System;
-using System.Collections;
 
 public class BLEController : MonoBehaviour
 {
@@ -8,7 +7,6 @@ public class BLEController : MonoBehaviour
 
     void Start()
     {
-        // Initialize the BLEManager Java class
         try
         {
             using (AndroidJavaClass javaClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
@@ -29,7 +27,7 @@ public class BLEController : MonoBehaviour
 
     public void Read()
     {
-        bleManager.Call("read");
+        bleManager.Call("startReadingDataStream");
     }
 
     public void Write(byte[] data)
@@ -192,25 +190,35 @@ public class BLEController : MonoBehaviour
 
         SendCommand(command, parameters);
     }
+
+    /// <summary>
+    /// Notify app that a tile has been touched
+    /// </summary>
+    /// <param name="fromTileId">ID of tile that has been touched</param>
+    /// <param name="reactionTimeHigh">Reaction Time (High Byte)</param>
+    /// <param name="reactionTimeLow">Reaction Time (Low Byte)</param>
+    public void AwaitTouch(byte fromTileId, byte reactionTimeHigh, byte reactionTimeLow) {
+        byte[] parameters = new byte[] {
+            fromTileId,
+            reactionTimeHigh,
+            reactionTimeLow
+        };
+        SendCommand(0x12, parameters);
+    }
+
+    /// <summary>
+    /// Notify app that a tile been shaked
+    /// </summary>
+    /// <param name="reactionTimeHigh">Reaction Time (High Byte)</param>
+    /// <param name="reactionTimeLow">Reaction Time (Low Byte)</param>
+    public void AwaitShake(byte reactionTimeHigh, byte reactionTimeLow)
+    {
+        byte[] parameters = new byte[] {
+            reactionTimeHigh,
+            reactionTimeLow
+        };
+        SendCommand(0x15, parameters);
+    }
+
+
 }
-
-//// Create a BroadcastReceiver class to handle received data
-//public class DataReceiver : AndroidJavaProxy
-//{
-//    private BLEController controller;
-
-//    public DataReceiver(BLEController controller) : base("android.content.BroadcastReceiver")
-//    {
-//        this.controller = controller;
-//    }
-
-//    public void onReceive(AndroidJavaObject context, AndroidJavaObject intent)
-//    {
-//        string action = intent.Call<string>("getAction");
-//        if (action.Equals("com.ahlab.itilesbluetoothunity.DATA_RECEIVED"))
-//        {
-//            string data = intent.Call<string>("getStringExtra", "data");
-//            controller.OnDataReceived(data);
-//        }
-//    }
-//}
