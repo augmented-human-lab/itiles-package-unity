@@ -20,6 +20,15 @@ public class BLEController : MonoBehaviour
         }     
     }
 
+    public void SearchITiles() {
+        bleManager.Call("searchITiles");
+    }
+
+    public void StopSearchingITiles()
+    {
+        bleManager.Call("stopSearchingITiles");
+    }
+
     public bool Connect(string deviceAddress, string serviceUUID, string characteristicUUIDRx, string characteristicUUIDTx)
     {
         return bleManager.Call<bool>("connect", deviceAddress, serviceUUID, characteristicUUIDRx, characteristicUUIDTx);
