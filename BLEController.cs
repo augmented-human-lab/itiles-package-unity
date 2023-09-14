@@ -13,6 +13,8 @@ public class BLEController : MonoBehaviour
             {
                 AndroidJavaObject unityActivity = javaClass.GetStatic<AndroidJavaObject>("currentActivity");
                 bleManager = new AndroidJavaObject("org.ahlab.itiles.plugin.BLEManager", unityActivity);
+                BLEDataCallbackProxy dataCallback = new BLEDataCallbackProxy();
+                bleManager.Call("setDataCallback", dataCallback);
             }
         }
         catch (Exception e) {
