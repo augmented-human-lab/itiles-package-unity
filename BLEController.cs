@@ -5,6 +5,9 @@ public class BLEController : MonoBehaviour
 {
     private AndroidJavaObject bleManager;
 
+    public delegate void DataReceivedEventHandler(string value);
+    public event DataReceivedEventHandler DataReceived;
+
     void Start()
     {
         try
@@ -13,13 +16,17 @@ public class BLEController : MonoBehaviour
             {
                 AndroidJavaObject unityActivity = javaClass.GetStatic<AndroidJavaObject>("currentActivity");
                 bleManager = new AndroidJavaObject("org.ahlab.itiles.plugin.BLEManager", unityActivity);
-                BLEDataCallbackProxy dataCallback = new BLEDataCallbackProxy();
+                BLEDataCallbackProxy dataCallback = new BLEDataCallbackProxy(this);
                 bleManager.Call("setDataCallback", dataCallback);
             }
         }
         catch (Exception e) {
             Debug.LogError(e.Message);
         }     
+    }
+
+    public void ReceiveData(string value) {
+        DataReceived?.Invoke(value);
     }
 
     public void SearchITiles() {
