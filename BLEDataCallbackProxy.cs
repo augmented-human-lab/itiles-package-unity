@@ -1,10 +1,11 @@
+using ITiles;
 using UnityEngine;
 
 public class BLEDataCallbackProxy : AndroidJavaProxy, BLEDataCallback
 {
-    private BLEController targetMonoBehaviour;
+    private readonly BLEController targetMonoBehaviour;
 
-    public BLEDataCallbackProxy(BLEController target) : base("org.ahlab.itiles.plugin.BLEDataCallback") {
+    public BLEDataCallbackProxy(BLEController target) : base(CONFIG_STRINGS.ANDROID_UNITY_CALLBACK_INTERFACE) {
         targetMonoBehaviour = target;
     }
 

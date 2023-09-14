@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using ITiles;
 
 public class BLEController : MonoBehaviour
 {
@@ -12,10 +13,10 @@ public class BLEController : MonoBehaviour
     {
         try
         {
-            using (AndroidJavaClass javaClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
+            using (AndroidJavaClass javaClass = new AndroidJavaClass(CONFIG_STRINGS.UNITY_PLAYER_CLASS))
             {
                 AndroidJavaObject unityActivity = javaClass.GetStatic<AndroidJavaObject>("currentActivity");
-                bleManager = new AndroidJavaObject("org.ahlab.itiles.plugin.BLEManager", unityActivity);
+                bleManager = new AndroidJavaObject(CONFIG_STRINGS.ANDROID_LIBRARY_MAIN_CLASS, unityActivity);
                 BLEDataCallbackProxy dataCallback = new BLEDataCallbackProxy(this);
                 bleManager.Call("setDataCallback", dataCallback);
             }
@@ -38,9 +39,14 @@ public class BLEController : MonoBehaviour
         bleManager.Call("stopSearchingITiles");
     }
 
-    public bool Connect(string deviceAddress, string serviceUUID, string characteristicUUIDRx, string characteristicUUIDTx)
+    public bool Connect(string deviceAddress)
     {
-        return bleManager.Call<bool>("connect", deviceAddress, serviceUUID, characteristicUUIDRx, characteristicUUIDTx);
+        return bleManager.Call<bool>("connect", 
+            deviceAddress, 
+            CONFIG_STRINGS.ITILES_BLE_SERVICE_UUID, 
+            CONFIG_STRINGS.CHARACTERISTIC_UUID_RX, 
+            CONFIG_STRINGS.CHARACTERISTIC_UUID_TX
+        );
     }
 
     public void Read()
@@ -88,10 +94,7 @@ public class BLEController : MonoBehaviour
 
         Array.Copy(parameters, 0, commandPacket, 4, parameters.Length);
 
-        string hexString = BitConverter.ToString(commandPacket).Replace("-", " ");
-        Debug.Log("Byte array as hexadecimal string: " + hexString);
-
-        commandPacket[commandPacket.Length - 1] = 0xEF; // End Byte
+        commandPacket[^1] = 0xEF; // End Byte
 
         // Convert the byte array to sbyte array
         sbyte[] sbyteCmd = new sbyte[commandPacket.Length];

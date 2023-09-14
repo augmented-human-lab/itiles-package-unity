@@ -1,8 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 namespace ITiles {
+   
     public class TX_COMMAND {
         // [APP -> MASTER -> STANDARD] COMMANDS
         // [APP -> MASTER] COMMANDS
@@ -41,5 +38,14 @@ namespace ITiles {
         public static readonly byte SHAKE = 0x15;
         public static readonly byte TILE_TIMEOUT = 0x02;
 
+    }
+
+    public class CONFIG_STRINGS {
+        public static readonly string ANDROID_UNITY_CALLBACK_INTERFACE = "org.ahlab.itiles.plugin.BLEDataCallback";
+        public static readonly string UNITY_PLAYER_CLASS = "com.unity3d.player.UnityPlayer";
+        public static readonly string ANDROID_LIBRARY_MAIN_CLASS = "org.ahlab.itiles.plugin.BLEManager";
+        public static readonly string ITILES_BLE_SERVICE_UUID = "6E400001-B5A3-F393-E0A9-E50E24DCCA9E";
+        public static readonly string CHARACTERISTIC_UUID_RX = "6E400003-B5A3-F393-E0A9-E50E24DCCA9E";
+        public static readonly string CHARACTERISTIC_UUID_TX = "6E400002-B5A3-F393-E0A9-E50E24DCCA9E";
     }
 }
