@@ -1,4 +1,5 @@
 using ITiles;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class BLEDataCallbackProxy : AndroidJavaProxy, BLEDataCallback
@@ -12,5 +13,10 @@ public class BLEDataCallbackProxy : AndroidJavaProxy, BLEDataCallback
     public void onDataReceived(string value)
     {
         targetMonoBehaviour.ReceiveData(value);
+    }
+
+    public void onITilesIDsDiscovered(string deviceIds)
+    {
+        targetMonoBehaviour.DiscoveredITilesIDs(deviceIds);
     }
 }

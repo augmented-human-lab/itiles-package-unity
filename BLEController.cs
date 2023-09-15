@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using ITiles;
+using System.Collections.Generic;
 
 public class BLEController : MonoBehaviour
 {
@@ -8,6 +9,9 @@ public class BLEController : MonoBehaviour
 
     public delegate void DataReceivedEventHandler(string value);
     public event DataReceivedEventHandler DataReceived;
+
+    public delegate void ITilesIDsDiscoveredEventHandler(string devices);
+    public event ITilesIDsDiscoveredEventHandler ITilesIDsDiscovered;
 
     void Start()
     {
@@ -24,6 +28,10 @@ public class BLEController : MonoBehaviour
         catch (Exception e) {
             Debug.LogError(e.Message);
         }     
+    }
+
+    public void DiscoveredITilesIDs(string deviceIds) {
+        ITilesIDsDiscovered?.Invoke(deviceIds);
     }
 
     public void ReceiveData(string value) {
