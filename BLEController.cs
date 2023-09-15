@@ -31,7 +31,7 @@ public class BLEController : MonoBehaviour
     }
 
     public void SearchITiles() {
-        bleManager.Call("searchITiles");
+        bleManager.Call("startSearchingITiles");
     }
 
     public void StopSearchingITiles()
@@ -39,9 +39,9 @@ public class BLEController : MonoBehaviour
         bleManager.Call("stopSearchingITiles");
     }
 
-    public bool Connect(string deviceAddress)
+    public void Connect(string deviceAddress)
     {
-        return bleManager.Call<bool>("connect", 
+        bleManager.Call("connect", 
             deviceAddress, 
             CONFIG_STRINGS.ITILES_BLE_SERVICE_UUID, 
             CONFIG_STRINGS.CHARACTERISTIC_UUID_RX, 
