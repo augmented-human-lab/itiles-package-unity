@@ -1,20 +1,26 @@
 using UnityEngine;
 using System;
 using ITiles;
-using System.Collections.Generic;
 
 public class BLEController : MonoBehaviour
 {
     private AndroidJavaObject bleManager;
 
+    #region Subscribable itile events
+
     public delegate void DataReceivedEventHandler(string value);
     public event DataReceivedEventHandler DataReceived;
+
+    public delegate void DataReceivedDecomposedEventHandler(ITileMessage iTileMessage);
+    public event DataReceivedDecomposedEventHandler DataReceivedDecomposed;
 
     public delegate void ITilesIDsDiscoveredEventHandler(string devices);
     public event ITilesIDsDiscoveredEventHandler ITilesIDsDiscovered;
 
     public delegate void ConnectionStateChangedEventHandler(int connectionState);
     public event ConnectionStateChangedEventHandler ConnectionStateChanged;
+
+    #endregion
 
     void Start()
     {
@@ -32,6 +38,7 @@ public class BLEController : MonoBehaviour
             Debug.LogError(e.Message);
         }     
     }
+    #region Event Invoker methods
 
     public void OnConnectionStateChanged(int connectionState) {
         ConnectionStateChanged?.Invoke(connectionState);
@@ -43,13 +50,18 @@ public class BLEController : MonoBehaviour
 
     public void ReceiveData(string value) {
         DataReceived?.Invoke(value);
+        DataReceivedDecomposed?.Invoke(ReadMessage(value));
     }
 
-    public void SearchITiles() {
+    #endregion
+
+    #region Main iTile methods
+
+    public void StartScan() {
         bleManager.Call("startSearchingITiles");
     }
 
-    public void StopSearchingITiles()
+    public void StopScan()
     {
         bleManager.Call("stopSearchingITiles");
     }
@@ -74,41 +86,16 @@ public class BLEController : MonoBehaviour
         bleManager.Call("write", data);
     }
 
-    public void SendTestCommand() {
-        byte[] triggerVibrateCommand = new byte[]{
-            (byte) 0xAA, // Start Byte
-            (byte) 0x01, // Tile ID (0x01 for a specific tile ID)
-            (byte) 0x0D, // Command: TRIGGER_VIBRATE (0x0D)
-            (byte) 0x04, // Length (Number of bytes for Parameters)
-            (byte) 0x03, // Parameter 1: Vibration pattern ID (0x01 - 0xFF)
-            (byte) 0x01, // Parameter 2: Repeat 1 time
-            (byte) 0x03, // Parameter 3: Log reaction time for both touch/step and shake
-            (byte) 0x0A, // Parameter 4: Timeout response after 10 seconds if not touched/shake
-            (byte) 0xEF // End Byte
-        };
-
-        sbyte[] sbyteCmd = new sbyte[triggerVibrateCommand.Length];
-        for (int i = 0; i < triggerVibrateCommand.Length; i++)
-        {
-            sbyteCmd[i] = (sbyte)triggerVibrateCommand[i];
-        }
-
-        // Send the command packet to the BLE device
-        bleManager.Call("write", sbyteCmd);
-    }
-
     // Method to send the specific command with parameters to the BLE device
-    public void SendCommand(byte command, byte[] parameters)
+    private void SendCommand(byte command, byte[] parameters)
     {
-        // Command packet format: [Start Byte][Command][Length][Parameters][End Byte]
+        // Command packet format: [Start Byte][Tile ID][Command][Length][Parameters][End Byte]
         byte[] commandPacket = new byte[5 + parameters.Length];
         commandPacket[0] = 0x7E; // Start Byte
-        commandPacket[1] = 0x00; // tile id
-        commandPacket[2] = command;
-        commandPacket[3] = (byte)parameters.Length;
-
-        Array.Copy(parameters, 0, commandPacket, 4, parameters.Length);
-
+        commandPacket[1] = 0x00; // Tile ID Byte
+        commandPacket[2] = command; // Command Byte
+        commandPacket[3] = (byte)parameters.Length; // Length Byte
+        Array.Copy(parameters, 0, commandPacket, 4, parameters.Length); // Parameter Bytes
         commandPacket[^1] = 0xEF; // End Byte
 
         // Convert the byte array to sbyte array
@@ -122,10 +109,25 @@ public class BLEController : MonoBehaviour
         bleManager.Call("write", sbyteCmd);
     }
 
+    // Method to decompose received command from the BLE device
+    private ITileMessage ReadMessage(string message) {
+        ITileMessage iTileMessage = new ITileMessage();
+        byte[] byteMessage = HexStringToByteArray(message);
+        // Command packet format: [Start Byte][Tile ID][Command][Length][Parameters][End Byte]
+        iTileMessage.startByte = byteMessage[0];
+        iTileMessage.tileId = byteMessage[1];
+        iTileMessage.command = byteMessage[2];
+        iTileMessage.length = byteMessage[3];
+        //iTileMessage.parameters = new byte[iTileMessage.length - 5];
+        //Array.Copy(byteMessage, 4, iTileMessage.parameters, 0, iTileMessage.parameters.Length);
+        iTileMessage.endByte = byteMessage[^1];
+        return iTileMessage;
+    }
+
     // Method to send the BROADCAST command with the MASTER tile mac address
     public void BroadcastCommand(byte[] masterTileMacAddress)
     {
-        byte command = 0x01;
+        byte command = TX_COMMAND.BROADCAST;
         byte[] parameters = new byte[6];
         Array.Copy(masterTileMacAddress, parameters, 6);
 
@@ -255,6 +257,26 @@ public class BLEController : MonoBehaviour
         };
         SendCommand(0x15, parameters);
     }
+    #endregion
 
+    #region Utility methods
+    static byte[] HexStringToByteArray(string hex)
+    {
+        if (hex.Length % 2 != 0)
+        {
+            throw new ArgumentException("Hex string length must be even.");
+        }
+
+        byte[] byteArray = new byte[hex.Length / 2];
+
+        for (int i = 0; i < byteArray.Length; i++)
+        {
+            string byteValue = hex.Substring(i * 2, 2);
+            byteArray[i] = Convert.ToByte(byteValue, 16);
+        }
+
+        return byteArray;
+    }
+    #endregion
 
 }
