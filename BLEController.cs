@@ -13,6 +13,9 @@ public class BLEController : MonoBehaviour
     public delegate void ITilesIDsDiscoveredEventHandler(string devices);
     public event ITilesIDsDiscoveredEventHandler ITilesIDsDiscovered;
 
+    public delegate void ConnectionStateChangedEventHandler(int connectionState);
+    public event ConnectionStateChangedEventHandler ConnectionStateChanged;
+
     void Start()
     {
         try
@@ -28,6 +31,10 @@ public class BLEController : MonoBehaviour
         catch (Exception e) {
             Debug.LogError(e.Message);
         }     
+    }
+
+    public void OnConnectionStateChanged(int connectionState) {
+        ConnectionStateChanged?.Invoke(connectionState);
     }
 
     public void DiscoveredITilesIDs(string deviceIds) {

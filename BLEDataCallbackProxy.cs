@@ -1,5 +1,4 @@
 using ITiles;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BLEDataCallbackProxy : AndroidJavaProxy, BLEDataCallback
@@ -19,4 +18,9 @@ public class BLEDataCallbackProxy : AndroidJavaProxy, BLEDataCallback
     {
         targetMonoBehaviour.DiscoveredITilesIDs(deviceIds);
     }
+
+    public void onConnectionStateChanged(int connectionState) {
+        targetMonoBehaviour.OnConnectionStateChanged(connectionState);
+    }
+
 }
