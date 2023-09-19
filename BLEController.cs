@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using ITiles;
+using System.Text;
 
 public class BLEController : MonoBehaviour
 {
@@ -87,12 +88,12 @@ public class BLEController : MonoBehaviour
     }
 
     // Method to send the specific command with parameters to the BLE device
-    private void SendCommand(byte command, byte[] parameters)
+    private void SendCommand(byte command, byte[] parameters, byte tileId = 0x00)
     {
         // Command packet format: [Start Byte][Tile ID][Command][Length][Parameters][End Byte]
         byte[] commandPacket = new byte[5 + parameters.Length];
         commandPacket[0] = 0x7E; // Start Byte
-        commandPacket[1] = 0x00; // Tile ID Byte
+        commandPacket[1] = tileId; // Tile ID Byte
         commandPacket[2] = command; // Command Byte
         commandPacket[3] = (byte)parameters.Length; // Length Byte
         Array.Copy(parameters, 0, commandPacket, 4, parameters.Length); // Parameter Bytes
@@ -112,15 +113,26 @@ public class BLEController : MonoBehaviour
     // Method to decompose received command from the BLE device
     private ITileMessage ReadMessage(string message) {
         ITileMessage iTileMessage = new ITileMessage();
+        Debug.Log("SANKHA UNITY >>>> " + message);
         byte[] byteMessage = HexStringToByteArray(message);
         // Command packet format: [Start Byte][Tile ID][Command][Length][Parameters][End Byte]
         iTileMessage.startByte = byteMessage[0];
+        Debug.Log("SANKHA startByte >>>> " + byteMessage[0]);
+
         iTileMessage.tileId = byteMessage[1];
+        Debug.Log("SANKHA TILEiD >>>> " + byteMessage[1]);
+
         iTileMessage.command = byteMessage[2];
+        Debug.Log("SANKHA COMMAND >>>> " + byteMessage[2]);
+
         iTileMessage.length = byteMessage[3];
+        Debug.Log("SANKHA length >>>> " + byteMessage[3]);
+
         //iTileMessage.parameters = new byte[iTileMessage.length - 5];
         //Array.Copy(byteMessage, 4, iTileMessage.parameters, 0, iTileMessage.parameters.Length);
         iTileMessage.endByte = byteMessage[^1];
+        Debug.Log("SANKHA END >>>> " + byteMessage[^1]);
+
         return iTileMessage;
     }
 
@@ -190,12 +202,12 @@ public class BLEController : MonoBehaviour
     }
 
     // Method to send the TRIGGER_SOUND command
-    public void TriggerSound(byte soundTrackID, byte repeatCount, byte logReactionTime, byte timeoutResponse)
+    public void TriggerSound(byte soundTrackID, byte repeatCount, byte logReactionTime, byte timeoutResponse, byte tileId = 0x00)
     {
         byte command = 0x0C;
         byte[] parameters = new byte[] { soundTrackID, repeatCount, logReactionTime, timeoutResponse };
 
-        SendCommand(command, parameters);
+        SendCommand(command, parameters, tileId);
     }
 
     // Method to send the TRIGGER_VIBRATE command
@@ -260,8 +272,10 @@ public class BLEController : MonoBehaviour
     #endregion
 
     #region Utility methods
-    static byte[] HexStringToByteArray(string hex)
+    public static byte[] HexStringToByteArray(string hex)
     {
+        Debug.Log(hex);
+        hex = hex.Replace(":", "");
         if (hex.Length % 2 != 0)
         {
             throw new ArgumentException("Hex string length must be even.");
@@ -274,8 +288,14 @@ public class BLEController : MonoBehaviour
             string byteValue = hex.Substring(i * 2, 2);
             byteArray[i] = Convert.ToByte(byteValue, 16);
         }
-
         return byteArray;
+    }
+
+    public static string ByteArrayToHexString(byte[] bytes) {
+        foreach (byte b in bytes) {
+            Debug.LogWarning(b);
+        }
+        return Encoding.UTF8.GetString(bytes);
     }
     #endregion
 

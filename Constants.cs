@@ -48,4 +48,12 @@ namespace ITiles {
         public static readonly string CHARACTERISTIC_UUID_RX = "6E400003-B5A3-F393-E0A9-E50E24DCCA9E";
         public static readonly string CHARACTERISTIC_UUID_TX = "6E400002-B5A3-F393-E0A9-E50E24DCCA9E";
     }
+
+    public class CONNECTION_STATE {
+        public static readonly int DISCONNECTED = 0;
+        public static readonly int CONNECTING = 1;
+        public static readonly int CONNECTED = 2;
+        public static readonly int DISCONNECTING = 3;
+
+    }
 }
