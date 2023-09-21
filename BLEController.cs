@@ -88,16 +88,16 @@ public class BLEController : MonoBehaviour
     }
 
     // Method to send the specific command with parameters to the BLE device
-    private void SendCommand(byte command, byte[] parameters, byte tileId = 0x00)
+    private void SendCommand(TX_COMMAND command, byte[] parameters, SELECT_ITILE tileId = SELECT_ITILE.MASTER)
     {
         // Command packet format: [Start Byte][Tile ID][Command][Length][Parameters][End Byte]
         byte[] commandPacket = new byte[5 + parameters.Length];
-        commandPacket[0] = TX_COMMAND.START_BYTE;
-        commandPacket[1] = tileId;
-        commandPacket[2] = command;
+        commandPacket[0] = (byte)TX_COMMAND.START_BYTE;
+        commandPacket[1] = (byte)tileId;
+        commandPacket[2] = (byte)command;
         commandPacket[3] = (byte)parameters.Length;
         Array.Copy(parameters, 0, commandPacket, 4, parameters.Length);
-        commandPacket[^1] = TX_COMMAND.END_BYTE;
+        commandPacket[^1] = (byte)TX_COMMAND.END_BYTE;
 
         // Convert the byte array to sbyte array
         sbyte[] sbyteCmd = new sbyte[commandPacket.Length];
@@ -130,19 +130,19 @@ public class BLEController : MonoBehaviour
                 OnRequestTileID(iTileMessage.tileId, iTileMessage.parameters);
                 break;
             case (byte)RX_COMMAND.REPLY_PAIRED_TILES:
-                ReplyPairedTiles(iTileMessage.tileId, iTileMessage.parameters);
+                OnReplyPairedTiles(iTileMessage.tileId, iTileMessage.parameters);
                 break;
             case (byte)RX_COMMAND.REPLY_ONLINE_TILES:
-                ReplyOnlineTiles(iTileMessage.tileId, iTileMessage.parameters);
+                OnReplyOnlineTiles(iTileMessage.tileId, iTileMessage.parameters);
                 break;
             case (byte)RX_COMMAND.SHAKE:
                 OnTileShake(iTileMessage.tileId, iTileMessage.parameters);
                 break;
             case (byte)RX_COMMAND.SIDE_UPDATE:
-                OnTileShake(iTileMessage.tileId, iTileMessage.parameters);
+                OnSideUpdate(iTileMessage.tileId, iTileMessage.parameters);
                 break;
             case (byte)RX_COMMAND.STEP_CHANGE:
-
+                OnStepChange(iTileMessage.tileId, iTileMessage.parameters);
                 break;
             case (byte)RX_COMMAND.TILE_TIMEOUT:
                 OnTileTimeout();
@@ -183,16 +183,12 @@ public class BLEController : MonoBehaviour
     }
 
     // Method to send the UNPAIR command
-    public void UnpairTile(byte tileID)
+    public void UnpairTile(SELECT_ITILE tileID)
     {
-        if (tileID < 0x01 || tileID > 0x7f)
-        {
-            throw new ArgumentException("Standard tile Id must be within 0x01 to 0x7f");
-        }
-        SendCommand(TX_COMMAND.UNPAIR, new byte[] { tileID });
+        SendCommand(TX_COMMAND.UNPAIR, new byte[] { (byte)tileID });
     }
 
-    public void ReplyPairedTiles(byte tileId, byte[] parameters)
+    public void OnReplyPairedTiles(byte tileId, byte[] parameters)
     {
         Debug.Log("NO OF TILES PAIRED: " + Convert.ToInt32(parameters[0]));
         Debug.Log("They are..");
@@ -201,7 +197,7 @@ public class BLEController : MonoBehaviour
         }
     }
 
-    public void ReplyOnlineTiles(byte tileId, byte[] parameters)
+    public void OnReplyOnlineTiles(byte tileId, byte[] parameters)
     {
         Debug.Log("Tile online: " + tileId);
         Debug.Log("Battary: " + Convert.ToInt32(parameters[0]));
@@ -221,32 +217,55 @@ public class BLEController : MonoBehaviour
         SendCommand(TX_COMMAND.QUERY_ONLINE_TILES, new byte[0]);
     }
 
-    public void TriggerLight(byte[] colorIntensities, byte offAfterSeconds, byte logReactionTime, byte timeoutResponse, byte tileId = 0x00)
+    public void TriggerLight(
+        byte[] colorIntensities, 
+        TIMEOUT_DELAY offAfterSeconds, 
+        LOG_REACTION_TIME logReactionTime, 
+        TIMEOUT_RESPONSE timeoutResponse, 
+        SELECT_ITILE tileId
+    )
     {
         if (colorIntensities.Length != 3)
         {
             throw new ArgumentException("colorIntensities array must have exactly 3 elements.");
         }
-        byte[] parameters = new byte[] { colorIntensities[0], colorIntensities[1], colorIntensities[2], offAfterSeconds, logReactionTime, timeoutResponse };
+        byte[] parameters = new byte[] { colorIntensities[0], colorIntensities[1], colorIntensities[2], (byte)offAfterSeconds, (byte)logReactionTime, (byte)timeoutResponse };
         SendCommand(TX_COMMAND.TRIGGER_LIGHT, parameters, tileId);
     }
 
     // Method to send the TRIGGER_SOUND command
-    public void TriggerSound(byte soundTrackID, byte repeatCount, byte logReactionTime, byte timeoutResponse, byte tileId = 0x00)
+    public void TriggerSound(
+        byte soundTrackID, 
+        REPEAT_COUNT repeatCount, 
+        LOG_REACTION_TIME logReactionTime, 
+        TIMEOUT_RESPONSE timeoutResponse, 
+        SELECT_ITILE tileId
+    )
     {
-        byte[] parameters = new byte[] { soundTrackID, repeatCount, logReactionTime, timeoutResponse };
+        byte[] parameters = new byte[] { soundTrackID, (byte)repeatCount, (byte)logReactionTime, (byte)timeoutResponse };
         SendCommand(TX_COMMAND.TRIGGER_SOUND, parameters, tileId);
     }
 
     // Method to send the TRIGGER_VIBRATE command
-    public void TriggerVibrate(VIBRATION_PATTERN vibrationPatternID, byte repeatCount, byte logReactionTime, byte timeoutResponse, byte tileId = 0x00)
+    public void TriggerVibrate(
+        VIBRATION_PATTERN vibrationPatternID, 
+        REPEAT_COUNT repeatCount, 
+        LOG_REACTION_TIME logReactionTime, 
+        TIMEOUT_RESPONSE timeoutResponse, 
+        SELECT_ITILE tileId)
     {
-        byte[] parameters = new byte[] { (byte)vibrationPatternID, repeatCount, logReactionTime, timeoutResponse };
+        byte[] parameters = new byte[] { (byte)vibrationPatternID, (byte)repeatCount, (byte)logReactionTime, (byte)timeoutResponse };
         SendCommand(TX_COMMAND.TRIGGER_VIBRATE, parameters, tileId);
     }
 
     // Method to send the TRIGGER_SIDE command
-    public void TriggerSide(byte[] sideColors, byte offAfterSeconds, byte logReactionTime, byte timeoutResponse, byte tileId = 0x00)
+    public void TriggerSide(
+        byte[] sideColors, 
+        TIMEOUT_DELAY offAfterSeconds, 
+        LOG_REACTION_TIME logReactionTime, 
+        TIMEOUT_RESPONSE timeoutResponse, 
+        SELECT_ITILE tileId
+    )
     {
         if (sideColors.Length != 3)
         {
@@ -254,14 +273,14 @@ public class BLEController : MonoBehaviour
         }
         byte[] parameters = new byte[sideColors.Length + 3];
         Array.Copy(sideColors, 0, parameters, 0, sideColors.Length);
-        parameters[^3] = offAfterSeconds;
-        parameters[^2] = logReactionTime;
-        parameters[^1] = timeoutResponse;
+        parameters[^3] = (byte)offAfterSeconds;
+        parameters[^2] = (byte)logReactionTime;
+        parameters[^1] = (byte)timeoutResponse;
         SendCommand(TX_COMMAND.TRIGGER_SIDE, parameters, tileId);
     }
 
     // Method to stop light effect on the tile
-    public void StopLightEffect(byte tileId = 0x00)
+    public void StopLightEffect(SELECT_ITILE tileId)
     {
         SendCommand(TX_COMMAND.STOP_EFFECT, new byte[0], tileId);
     }
@@ -292,33 +311,49 @@ public class BLEController : MonoBehaviour
         Debug.Log("Reaction time: " + reactionTime);
     }
 
-    public void SuperTrigger(byte tileId, byte[] parameters) { 
-    // tx 
+    public void SuperTrigger(byte[] parameters, SELECT_ITILE tileId) {
+        SendCommand(TX_COMMAND.SUPER_TRIGGER, parameters, tileId);
     }
 
     public void OnTileTimeout() {
         Debug.Log("A TILE HAS BEEN Timed out...");
     }
 
-    public void ToggleAcceleration(byte[] parameters, byte tileId = 0x00) {
-        // tx
+    public void OnSideUpdate(byte tileId, byte[] parameters) {
+        Debug.Log("A TILE SIDE HAS BEEN UPDATED");
+        Debug.Log("Which Tile: " + tileId);
+        Debug.Log("which side: " + parameters[0]);
+        Debug.Log("Unpair or pair: " + parameters[1]);
+        int reactionTime = (parameters[2] << 8) | parameters[3];
+        Debug.Log("Reaction time: " + reactionTime);
+    }
+
+    public void OnStepChange(byte tileId, byte[] parameters) {
+        Debug.Log("Someone has stepped on or off tile");
+        Debug.Log("Which Tile: " + tileId);
+        Debug.Log("Step on or off: " + parameters[0]);
+        int reactionTime = (parameters[1] << 8) | parameters[2];
+        Debug.Log("Reaction time: " + reactionTime);
+    }
+
+    public void ToggleAcceleration(byte[] parameters, SELECT_ITILE tileId) {
         SendCommand(TX_COMMAND.ENABLE_DISABLE_ACCEL, parameters, tileId);
     }
 
-    public void SetAccelerationThreshold(byte tileId, byte[] parameters) { 
-    // tx
+    public void SetAccelerationThreshold(byte[] parameters, SELECT_ITILE tileId) {
+        SendCommand(TX_COMMAND.SET_ACCEL_THRESHOLD, parameters, tileId);
     }
 
-    public void ToggleTouchSensor(byte tileId, byte[] parameters) { 
-    // tx
+    public void ToggleTouchSensor(byte[] parameters, SELECT_ITILE tileId) {
+        SendCommand(TX_COMMAND.ENABLE_DISABLE_TOUCH, parameters, tileId);
     }
 
-    public void SetVolume(byte tileId, byte[] parameters) { 
-    // tx
+    public void SetVolume(byte[] parameters, SELECT_ITILE tileId) {
+        throw new NotImplementedException();
     }
 
-    public void StopEffect(byte tileId, byte[] parameters) { 
-    // tx
+    public void StopEffect(byte[] parameters, SELECT_ITILE tileId) {
+        SendCommand(TX_COMMAND.STOP_EFFECT, parameters, tileId);
     }
 
     #endregion

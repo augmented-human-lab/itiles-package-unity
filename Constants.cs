@@ -2,35 +2,35 @@ namespace ITiles {
 
     // [APP -> MASTER -> STANDARD] COMMANDS
     // [APP -> MASTER] COMMANDS
-    public class TX_COMMAND {
+    public enum TX_COMMAND: byte {
 
 
-        public static readonly byte START_BYTE = 0x7E;
-        public static readonly byte END_BYTE = 0xEF;
+        START_BYTE = 0x7E,
+        END_BYTE = 0xEF,
 
         // SETUP
-        public static readonly byte BROADCAST = 0x01;
-        public static readonly byte ASSIGN_ID = 0x03; // MASTER -> STANDARD
-        public static readonly byte UNPAIR = 0x04;
-        public static readonly byte QUERY_PAIRED_TILES = 0x05;
-        public static readonly byte QUERY_ONLINE_TILES = 0x06;
+        BROADCAST = 0x01,
+        ASSIGN_ID = 0x03, // MASTER -> STANDARD
+        UNPAIR = 0x04,
+        QUERY_PAIRED_TILES = 0x05,
+        QUERY_ONLINE_TILES = 0x06,
         
         // IO EVENTS, COMMANDS
-        public static readonly byte TRIGGER_LIGHT = 0x0B;
-        public static readonly byte TRIGGER_SOUND = 0x0C;
-        public static readonly byte TRIGGER_VIBRATE = 0x0D;
-        public static readonly byte TRIGGER_SIDE = 0x0E;
-        public static readonly byte TRIGGER_EFFECT = 0x0F;
-        public static readonly byte ADVANCE_TRIGGER = 0x10;
-        public static readonly byte SUPER_TRIGGER = 0x16;
-        public static readonly byte OFF_LIGHT = 0x11;
-        public static readonly byte STOP_EFFECT = 0x1C;
+        TRIGGER_LIGHT = 0x0B,
+        TRIGGER_SOUND = 0x0C,
+        TRIGGER_VIBRATE = 0x0D,
+        TRIGGER_SIDE = 0x0E,
+        TRIGGER_EFFECT = 0x0F,
+        ADVANCE_TRIGGER = 0x10,
+        SUPER_TRIGGER = 0x16,
+        OFF_LIGHT = 0x11,
+        STOP_EFFECT = 0x1C,
 
         // SETTINGS, CONFIGS
-        public static readonly byte ENABLE_DISABLE_ACCEL = 0x18;
-        public static readonly byte SET_ACCEL_THRESHOLD = 0x19;
-        public static readonly byte ENABLE_DISABLE_TOUCH = 0x1A;
-        public static readonly byte TILE_TIMEOUT = 0x1B;
+        ENABLE_DISABLE_ACCEL = 0x18,
+        SET_ACCEL_THRESHOLD = 0x19,
+        ENABLE_DISABLE_TOUCH = 0x1A,
+        TILE_TIMEOUT = 0x1B
 
     }
 
@@ -66,92 +66,104 @@ namespace ITiles {
         public static readonly int DISCONNECTING = 3;
     }
 
-    public class SELECT_ITILE {
-        public static readonly byte MASTER = 0x00;
-        public static readonly byte I = 0x01;
-        public static readonly byte II = 0x01;
-        public static readonly byte III = 0x01;
-        public static readonly byte IV = 0x01;
-        public static readonly byte V = 0x01;
-        public static readonly byte VI = 0x01;
-        public static readonly byte VII = 0x01;
-        public static readonly byte ALL = 0xff;
+    public enum SELECT_ITILE: byte {
+        MASTER = 0x00,
+        I = 0x01,
+        II = 0x02,
+        III = 0x03,
+        IV = 0x04,
+        V = 0x05,
+        VI = 0x06,
+        VII = 0x07,
+        ALL = 0xff
     }
 
-    public class SELECT_SIDE
+    public enum SELECT_SIDE: byte
     {
-        public static readonly byte I = 0x01;
-        public static readonly byte II = 0x01;
-        public static readonly byte III = 0x01;
-        public static readonly byte IV = 0x01;
-        public static readonly byte V = 0x01;
-        public static readonly byte VI = 0x01;
+        I = 0x01,
+        II = 0x02,
+        III = 0x03,
+        IV = 0x04,
+        V = 0x05,
+        VI = 0x06
     }
 
-    public class LOG_REACTION_TIME {
-        public static readonly byte NONE = 0x00;
-        public static readonly byte TOUCH_OR_STEP = 0x01;
-        public static readonly byte SHAKE_ONLY = 0x02;
-        public static readonly byte TOUCH_OR_STEP_OR_SHAKE = 0x03;
-        public static readonly byte SIDE_PARING = 0x04;
+    public enum LOG_REACTION_TIME: byte {
+        NONE = 0x00,
+        TOUCH_OR_STEP = 0x01,
+        SHAKE_ONLY = 0x02,
+        TOUCH_OR_STEP_OR_SHAKE = 0x03,
+        SIDE_PARING = 0x04
     }
 
-    public class TIMEOUT_DELAY {
-        public static readonly byte NOPE = 0x00;
-        public static readonly byte SEC_1 = 0x01;
-        public static readonly byte SEC_2 = 0x02;
-        public static readonly byte SEC_3 = 0x05;
-        public static readonly byte SEC_4 = 0X04;
-        public static readonly byte SEC_5 = 0x05;
-        public static readonly byte SEC_10 = 0x0a;
-        public static readonly byte SEC_15 = 0x0f;
-        public static readonly byte SEC_20 = 0x14;
-        public static readonly byte SEC_30 = 0x1e;
-        public static readonly byte SEC_40 = 0x28;
-        public static readonly byte SEC_45 = 0x2d;
-        public static readonly byte SEC_90 = 0x5a;
-        public static readonly byte MIN_1 = 0x3c;
-        public static readonly byte MIN_2 = 0x78;
-        public static readonly byte MIN_3 = 0xb4;
-        public static readonly byte MIN_4 = 0xf0;
-        public static readonly byte MIN_4_25 = 0xff;
+    public enum TIMEOUT_DELAY: byte {
+        NOPE = 0x00,
+        SEC_1 = 0x01,
+        SEC_2 = 0x02,
+        SEC_3 = 0x05,
+        SEC_4 = 0X04,
+        SEC_5 = 0x05,
+        SEC_10 = 0x0a,
+        SEC_15 = 0x0f,
+        SEC_20 = 0x14,
+        SEC_30 = 0x1e,
+        SEC_40 = 0x28,
+        SEC_45 = 0x2d,
+        SEC_90 = 0x5a,
+        MIN_1 = 0x3c,
+        MIN_2 = 0x78,
+        MIN_3 = 0xb4,
+        MIN_4 = 0xf0,
+        MIN_4_25 = 0xff
     }
 
-    public class TIMEOUT_RESPONSE
+    public enum TIMEOUT_RESPONSE: byte
     {
-        public static readonly byte NOPE = 0x00;
-        public static readonly byte SEC_1 = 0x01;
-        public static readonly byte SEC_2 = 0x02;
-        public static readonly byte SEC_3 = 0x05;
-        public static readonly byte SEC_4 = 0X04;
-        public static readonly byte SEC_5 = 0x05;
-        public static readonly byte SEC_10 = 0x0a;
-        public static readonly byte SEC_15 = 0x0f;
-        public static readonly byte SEC_20 = 0x14;
-        public static readonly byte SEC_30 = 0x1e;
-        public static readonly byte SEC_40 = 0x28;
-        public static readonly byte SEC_45 = 0x2d;
-        public static readonly byte SEC_90 = 0x5a;
-        public static readonly byte MIN_1 = 0x3c;
-        public static readonly byte MIN_2 = 0x78;
-        public static readonly byte MIN_3 = 0xb4;
-        public static readonly byte MIN_4 = 0xf0;
-        public static readonly byte MIN_4_25 = 0xff;
+        NOPE = 0x00,
+        SEC_1 = 0x01,
+        SEC_2 = 0x02,
+        SEC_3 = 0x05,
+        SEC_4 = 0X04,
+        SEC_5 = 0x05,
+        SEC_10 = 0x0a,
+        SEC_15 = 0x0f,
+        SEC_20 = 0x14,
+        SEC_30 = 0x1e,
+        SEC_40 = 0x28,
+        SEC_45 = 0x2d,
+        SEC_90 = 0x5a,
+        MIN_1 = 0x3c,
+        MIN_2 = 0x78,
+        MIN_3 = 0xb4,
+        MIN_4 = 0xf0,
+        MIN_4_25 = 0xff
     }
 
-    public class STEP {
-        public static readonly byte ON_ITILE = 0x00;
-        public static readonly byte OFF_ITILE = 0x01;
+    public enum STEP: byte {
+        ON_ITILE = 0x00,
+        OFF_ITILE = 0x01
     }
 
-    public class SIDE
+    public enum SIDE: byte
     {
-        public static readonly byte UNPAIR = 0x00;
-        public static readonly byte PAIR = 0x01;
+        UNPAIR = 0x00,
+        PAIR = 0x01
     }
 
     public enum VIBRATION_PATTERN: byte {
         NONE = 0x00,
+        I = 0x01,
+        II = 0x02,
+        III = 0x03,
+        IV = 0x04,
+        V = 0x05,
+        VI = 0x06,
+        VII = 0x07,
+        VIII = 0x08,
+        IX = 0x09
+    }
+
+    public enum REPEAT_COUNT : byte {
         I = 0x01,
         II = 0x02,
         III = 0x03,
