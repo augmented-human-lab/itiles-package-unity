@@ -175,14 +175,9 @@ namespace ITiles {
         IX = 0x09
     }
 
-    public class SHAKE_DETECTOR {
-        public static readonly byte OFF = 0x00;
-        public static readonly byte ON = 0x01;
-    }
-
-    public class TOUCH_SENSOR {
-        public static readonly byte OFF = 0x00;
-        public static readonly byte ON = 0x01;
+    public enum TOGGLE_SENSOR: byte {
+        OFF = 0x00,
+        ON = 0x01
     }
 
     public class ANDROID_ITILE_METHOD {

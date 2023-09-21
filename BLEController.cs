@@ -316,40 +316,114 @@ public class BLEController : MonoBehaviour
         SendCommand(TX_COMMAND.TRIGGER_SIDE, parameters, tileId);
     }
 
+    public void TriggerEffect() {
+        throw new NotImplementedException();
+    }
+
+    // Method to trigger tile light, sound, vibration all at once
+    public void AdvancedTrigger(
+        byte redIntensity,
+        byte greenIntensity,
+        byte blueIntensity,
+        TIMEOUT_DELAY timeoutDelay,
+        byte soundTrackId,
+        byte NOT_IMPLEMENTED_1,
+        VIBRATION_PATTERN vibrationPattern,
+        REPEAT_COUNT repeatCount,
+        LOG_REACTION_TIME logReactionTime,
+        TIMEOUT_RESPONSE timeoutResponse,
+        SELECT_ITILE tileId
+    ) {
+        byte[] parameters = new byte[] { 
+            redIntensity, 
+            greenIntensity, 
+            blueIntensity, 
+            (byte)timeoutDelay, 
+            soundTrackId,
+            NOT_IMPLEMENTED_1,
+            (byte)vibrationPattern,
+            (byte)repeatCount,
+            (byte)logReactionTime,
+            (byte)timeoutResponse,
+        };
+        SendCommand(TX_COMMAND.ADVANCE_TRIGGER, parameters, tileId);
+    }
+
+    public void TurnOffLights(SELECT_ITILE tileId) 
+    { 
+        SendCommand(TX_COMMAND.OFF_LIGHT, new byte[0], tileId);
+    }
+
     // Method to stop light effect on the tile
     public void StopLightEffect(SELECT_ITILE tileId)
     {
         SendCommand(TX_COMMAND.STOP_EFFECT, new byte[0], tileId);
     }
 
-    public void SuperTrigger(byte[] parameters, SELECT_ITILE tileId)
+    public void SuperTrigger(
+        byte side1RedIntensity, byte side1GreenIntensity, byte side1BlueIntensity,
+        byte side2RedIntensity, byte side2GreenIntensity, byte side2BlueIntensity,
+        byte side3RedIntensity, byte side3GreenIntensity, byte side3BlueIntensity,
+        byte side4RedIntensity, byte side4GreenIntensity, byte side4BlueIntensity,
+        byte side5RedIntensity, byte side5GreenIntensity, byte side5BlueIntensity,
+        byte side6RedIntensity, byte side6GreenIntensity, byte side6BlueIntensity,
+        TIMEOUT_DELAY timeoutDelay,
+        byte soundTrackId,
+        byte NOT_IMPLEMENTED_1,
+        VIBRATION_PATTERN vibrationPattern,
+        REPEAT_COUNT repeatCount,
+        LOG_REACTION_TIME logReactionTime,
+        TIMEOUT_RESPONSE timeoutResponse,
+        SELECT_ITILE tileId
+    )
     {
+        byte[] parameters = new byte[] {
+            side1RedIntensity, side1GreenIntensity, side1BlueIntensity,
+            side2RedIntensity, side2GreenIntensity, side2BlueIntensity,
+            side3RedIntensity, side3GreenIntensity, side3BlueIntensity,
+            side4RedIntensity, side4GreenIntensity, side4BlueIntensity,
+            side5RedIntensity, side5GreenIntensity, side5BlueIntensity,
+            side6RedIntensity, side6GreenIntensity, side6BlueIntensity,
+            (byte)timeoutDelay,
+            soundTrackId,
+            NOT_IMPLEMENTED_1,
+            (byte)vibrationPattern,
+            (byte)repeatCount,
+            (byte)logReactionTime,
+            (byte)timeoutResponse,
+        };
         SendCommand(TX_COMMAND.SUPER_TRIGGER, parameters, tileId);
     }
 
-    public void ToggleAcceleration(byte[] parameters, SELECT_ITILE tileId) 
+    // Enable or disable accelerometer shake interrupt
+    public void ToggleAcceleration(
+        TOGGLE_SENSOR toggle,
+        SELECT_ITILE tileId
+    ) 
     {
-        SendCommand(TX_COMMAND.ENABLE_DISABLE_ACCEL, parameters, tileId);
+        SendCommand(TX_COMMAND.ENABLE_DISABLE_ACCEL, new byte[] { (byte)toggle}, tileId);
     }
 
-    public void SetAccelerationThreshold(byte[] parameters, SELECT_ITILE tileId) 
+    // Set threshold for shake interrupt
+    public void SetAccelerationThreshold(
+        byte accelerationThreshold,
+        SELECT_ITILE tileId
+    ) 
     {
-        SendCommand(TX_COMMAND.SET_ACCEL_THRESHOLD, parameters, tileId);
+        SendCommand(TX_COMMAND.SET_ACCEL_THRESHOLD, new byte[] { accelerationThreshold }, tileId);
     }
 
-    public void ToggleTouchSensor(byte[] parameters, SELECT_ITILE tileId) 
+    public void ToggleTouchSensor(
+        TOGGLE_SENSOR toggle,
+        SELECT_ITILE tileId
+    ) 
     {
-        SendCommand(TX_COMMAND.ENABLE_DISABLE_TOUCH, parameters, tileId);
+        SendCommand(TX_COMMAND.ENABLE_DISABLE_TOUCH, new byte[] { (byte)toggle}, tileId);
     }
 
     public void SetVolume(byte[] parameters, SELECT_ITILE tileId) 
     {
         throw new NotImplementedException();
-    }
-
-    public void StopEffect(byte[] parameters, SELECT_ITILE tileId) 
-    {
-        SendCommand(TX_COMMAND.STOP_EFFECT, parameters, tileId);
     }
 
     #endregion
