@@ -10,7 +10,6 @@ namespace ITiles {
 
         // SETUP
         public static readonly byte BROADCAST = 0x01;
-        public static readonly byte REQUEST_TILE_ID = 0x02; // STANDARD -> MASTER
         public static readonly byte ASSIGN_ID = 0x03; // MASTER -> STANDARD
         public static readonly byte UNPAIR = 0x04;
         public static readonly byte QUERY_PAIRED_TILES = 0x05;
@@ -40,13 +39,14 @@ namespace ITiles {
     public enum RX_COMMAND : byte
     {
         START_BYTE = 0xAA,
+        REQUEST_TILE_ID = 0x02,
         REPLY_PAIRED_TILES = 0x07,
         REPLY_ONLINE_TILES = 0x08,
         TOUCH = 0x12,
         SIDE_UPDATE = 0x13,
         STEP_CHANGE = 0x14,
         SHAKE = 0x15,
-        TILE_TIMEOUT = 0x02,
+        TILE_TIMEOUT = 0x17,
         END_BYTE = 0xEF
     }
 
@@ -150,17 +150,17 @@ namespace ITiles {
         public static readonly byte PAIR = 0x01;
     }
 
-    public class VIBRATION_PATTERN {
-        public static readonly byte NONE = 0x00;
-        public static readonly byte I = 0x01;
-        public static readonly byte II = 0x02;
-        public static readonly byte III = 0x03;
-        public static readonly byte IV = 0x04;
-        public static readonly byte V = 0x05;
-        public static readonly byte VI = 0x06;
-        public static readonly byte VII = 0x07;
-        public static readonly byte VIII = 0x08;
-        public static readonly byte IX = 0x09;
+    public enum VIBRATION_PATTERN: byte {
+        NONE = 0x00,
+        I = 0x01,
+        II = 0x02,
+        III = 0x03,
+        IV = 0x04,
+        V = 0x05,
+        VI = 0x06,
+        VII = 0x07,
+        VIII = 0x08,
+        IX = 0x09
     }
 
     public class SHAKE_DETECTOR {
