@@ -59,11 +59,11 @@ namespace ITiles {
         public static readonly string CHARACTERISTIC_UUID_TX = "6E400002-B5A3-F393-E0A9-E50E24DCCA9E";
     }
 
-    public class CONNECTION_STATE {
-        public static readonly int DISCONNECTED = 0;
-        public static readonly int CONNECTING = 1;
-        public static readonly int CONNECTED = 2;
-        public static readonly int DISCONNECTING = 3;
+    public enum CONNECTION_STATE: int {
+        DISCONNECTED = 0,
+        CONNECTING = 1,
+        CONNECTED = 2,
+        DISCONNECTING = 3
     }
 
     public enum SELECT_ITILE: byte {
@@ -119,7 +119,7 @@ namespace ITiles {
 
     public enum TIMEOUT_RESPONSE: byte
     {
-        NOPE = 0x00,
+        IMMEDIATE = 0x00,
         SEC_1 = 0x01,
         SEC_2 = 0x02,
         SEC_3 = 0x05,
@@ -194,18 +194,95 @@ namespace ITiles {
         public static readonly string WRITE = "write";
     }
 
-    public class EDGE_COLOR {
-        public static readonly byte[] PRESET_1 = new byte[] {
-            0x00, 0x00, 0x99, // side 1
-            0x00, 0x99, 0x00, // side 2
-            0x99, 0x00, 0x00, // side 3
-            0x99, 0x99, 0x00, // side 4
-            0x00, 0x99, 0x99, // side 5
-            0x99, 0x00, 0x99  // side 6       
-        };
+    public struct SIDE_COLORS {
+        public TILE_COLOR SIDE_1;
+        public TILE_COLOR SIDE_2;
+        public TILE_COLOR SIDE_3;
+        public TILE_COLOR SIDE_4;
+        public TILE_COLOR SIDE_5;
+        public TILE_COLOR SIDE_6;
+        public SIDE_COLORS(byte[] colors) {
+            SIDE_1 = new TILE_COLOR(colors[0], colors[1], colors[2]);
+            SIDE_2 = new TILE_COLOR(colors[3], colors[4], colors[5]);
+            SIDE_3 = new TILE_COLOR(colors[6], colors[7], colors[8]);
+            SIDE_4 = new TILE_COLOR(colors[9], colors[10], colors[11]);
+            SIDE_5 = new TILE_COLOR(colors[12], colors[11], colors[12]);
+            SIDE_6 = new TILE_COLOR(colors[15], colors[16], colors[17]);
+        }
+        public SIDE_COLORS(TILE_COLOR side1, TILE_COLOR side2, TILE_COLOR side3, TILE_COLOR side4, TILE_COLOR side5, TILE_COLOR side6) {
+            SIDE_1 = side1;
+            SIDE_2 = side2;
+            SIDE_3 = side3;
+            SIDE_4 = side4;
+            SIDE_5 = side5;
+            SIDE_6 = side6;
+        }
+        public SIDE_COLORS(
+            byte side_1_r, byte side_1_g, byte side_1_b,
+            byte side_2_r, byte side_2_g, byte side_2_b,
+            byte side_3_r, byte side_3_g, byte side_3_b,
+            byte side_4_r, byte side_4_g, byte side_4_b,
+            byte side_5_r, byte side_5_g, byte side_5_b,
+            byte side_6_r, byte side_6_g, byte side_6_b
+        ) {
+            SIDE_1 = new TILE_COLOR(side_1_r, side_1_g, side_1_b);
+            SIDE_2 = new TILE_COLOR(side_2_r, side_2_g, side_2_b);
+            SIDE_3 = new TILE_COLOR(side_3_r, side_3_g, side_3_b);
+            SIDE_4 = new TILE_COLOR(side_4_r, side_4_g, side_4_b);
+            SIDE_5 = new TILE_COLOR(side_5_r, side_5_g, side_5_b);
+            SIDE_6 = new TILE_COLOR(side_6_r, side_6_g, side_6_b);
+        }
+        public byte[] GET_BYTES() {
+            return new byte[18] {
+                SIDE_1.R, SIDE_1.G, SIDE_1.B,
+                SIDE_2.R, SIDE_2.G, SIDE_2.B,
+                SIDE_3.R, SIDE_3.G, SIDE_3.B,
+                SIDE_4.R, SIDE_4.G, SIDE_4.B,
+                SIDE_5.R, SIDE_5.G, SIDE_5.B,
+                SIDE_6.R, SIDE_6.G, SIDE_6.B
+            };
+        }
+        public static SIDE_COLORS RANDOM() {
+            byte[] randomColorSet = new byte[18];
+            System.Random random = new System.Random();
+            for (int i = 0; i < randomColorSet.Length; i++)
+            {
+                randomColorSet[i] = (byte)random.Next(100);
+            }
+            return new SIDE_COLORS(randomColorSet);
+        }
     }
 
-    public class TILE_COLOR {
+    public struct TILE_COLOR {
+        public byte R;
+        public byte G;
+        public byte B;
+        public TILE_COLOR(byte[] rgb) {
+            R = rgb[0];
+            G = rgb[1];
+            B = rgb[2];
+        }
+        public TILE_COLOR(byte r, byte g, byte b) {
+            R = r;
+            G = g;
+            B = b;
+        }
+        public byte[] GET_BYTES()
+        {
+            return new byte[3] {
+                R, G, B
+            };
+        }
+        public static TILE_COLOR RANDOM()
+        {
+            byte[] randomColor = new byte[3];
+            System.Random random = new System.Random();
+            for (int i = 0; i < randomColor.Length; i++)
+            {
+                randomColor[i] = (byte)random.Next(100);
+            }
+            return new TILE_COLOR(randomColor);
+        }
         public static readonly byte[] WHITE = new byte[] {
             0x99, 0x99, 0x99,
         };
@@ -228,4 +305,5 @@ namespace ITiles {
             0x99, 0x00, 0x99,
         };
     }
+
 }
