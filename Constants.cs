@@ -301,4 +301,23 @@ namespace ITiles {
         };
     }
 
+    public struct TOUCH_RESPONSE {
+        public string string_message;
+        public byte[] byte_message;
+        public byte tile_id;
+        public byte reaction_time_high_byte;
+        public byte reaction_time_low_byte;
+        public TOUCH_RESPONSE(string string_message, byte[] byte_message, byte tile_id, byte reaction_time_low_byte, byte reaction_time_high_byte)
+        {
+            this.string_message = string_message;
+            this.byte_message = byte_message;
+            this.tile_id = tile_id;
+            this.reaction_time_high_byte = reaction_time_high_byte;
+            this.reaction_time_low_byte = reaction_time_low_byte;
+        }
+        public int GetReactionTime() {
+            return (reaction_time_high_byte << 8) | reaction_time_low_byte;
+        }
+    }
+
 }
