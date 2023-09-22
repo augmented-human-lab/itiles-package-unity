@@ -135,19 +135,11 @@ public class BLEController : MonoBehaviour
     // Method to decompose received command from the BLE device
     private void ReadMessage(string message) 
     {
-        ITileMessage iTileMessage = new ITileMessage();
-        Debug.Log("ITILE MESSAGE >>>> " + message);
         byte[] byteMessage = HexStringToByteArray(message);
 
         // Command packet format: [Start Byte][Tile ID][Command][Length][Parameters][End Byte]
-        iTileMessage.startByte = byteMessage[0];
-        iTileMessage.tileId = byteMessage[1];
-        iTileMessage.command = byteMessage[2];
 
-        iTileMessage.parameters =  new byte[byteMessage.Length - 3];
-        Array.Copy(byteMessage, 3, iTileMessage.parameters, 0, iTileMessage.parameters.Length);
-
-        switch (iTileMessage.command) {
+        switch (byteMessage[2]) {
             case (byte)RX_COMMAND.REPLY_PAIRED_TILES:
                 PairedITileListReceived?.Invoke(new PAIRED_TILES_RESPONSE(byteMessage));
                 break;
@@ -155,7 +147,7 @@ public class BLEController : MonoBehaviour
                 OnlineITileStatusReceived?.Invoke(new ONLINE_TILES_RESPONSE(byteMessage));
                 break;
             case (byte)RX_COMMAND.SHAKE:
-                ITileShaked?.Invoke(new SHAKE_RESPONSE(message, byteMessage));
+                ITileShaked?.Invoke(new SHAKE_RESPONSE(byteMessage));
                 break;
             case (byte)RX_COMMAND.SIDE_UPDATE:
                 ITileSideUpdated?.Invoke(new SIDE_UPDATE_RESPONSE(byteMessage));
@@ -167,7 +159,7 @@ public class BLEController : MonoBehaviour
                 ITileTimedOut?.Invoke();
                 break;
             case (byte)RX_COMMAND.TOUCH:
-                ITileTouched?.Invoke(new TOUCH_RESPONSE(message, byteMessage));
+                ITileTouched?.Invoke(new TOUCH_RESPONSE(byteMessage));
                 break;
         }
     }

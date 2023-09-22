@@ -302,14 +302,12 @@ namespace ITiles {
     }
 
     public struct TOUCH_RESPONSE {
-        public string string_message;
         public byte[] byte_message;
         public byte tile_id;
         public byte reaction_time_high_byte;
         public byte reaction_time_low_byte;
-        public TOUCH_RESPONSE(string string_message, byte[] byte_message)
+        public TOUCH_RESPONSE(byte[] byte_message)
         {
-            this.string_message = string_message;
             this.byte_message = byte_message;
             this.tile_id = byte_message[1];
             this.reaction_time_high_byte = byte_message[3];
@@ -322,14 +320,12 @@ namespace ITiles {
 
     public struct SHAKE_RESPONSE
     {
-        public string string_message;
         public byte[] byte_message;
         public byte tile_id;
         public byte reaction_time_high_byte;
         public byte reaction_time_low_byte;
-        public SHAKE_RESPONSE(string string_message, byte[] byte_message)
+        public SHAKE_RESPONSE(byte[] byte_message)
         {
-            this.string_message = string_message;
             this.byte_message = byte_message;
             this.tile_id = byte_message[1];
             this.reaction_time_high_byte = byte_message[2];
