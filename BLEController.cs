@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using ITiles;
 using System.Text;
+using System.Collections.Generic;
 
 public class BLEController : MonoBehaviour
 {
@@ -12,7 +13,7 @@ public class BLEController : MonoBehaviour
     public delegate void DataReceivedEventHandler(string data);
     public event DataReceivedEventHandler DataReceived;
 
-    public delegate void ITilesIDsDiscoveredEventHandler(string devices);
+    public delegate void ITilesIDsDiscoveredEventHandler(List<string> discovered_itiles);
     public event ITilesIDsDiscoveredEventHandler ITilesIDsDiscovered;
 
     public delegate void ConnectionStateChangedEventHandler(int connectionState);
@@ -67,7 +68,14 @@ public class BLEController : MonoBehaviour
 
     public void DiscoveredITilesIDs(string deviceIds) 
     {
-        ITilesIDsDiscovered?.Invoke(deviceIds);
+        string preProcessedJson = "{\"discoveredItileIds\": #}".Replace("#", deviceIds);
+        TileIdList jsonData = JsonUtility.FromJson<TileIdList>(preProcessedJson);
+        List<string> iTileIds = new List<string>();
+        foreach (string id in jsonData.discoveredItileIds)
+        {
+            iTileIds.Add(id);
+        }
+        ITilesIDsDiscovered?.Invoke(iTileIds);
     }
 
     public void ReceiveData(string value) 
@@ -392,4 +400,10 @@ public class BLEController : MonoBehaviour
     }
     #endregion
 
+}
+
+[System.Serializable]
+public class TileIdList
+{
+    public string[] discoveredItileIds;
 }
