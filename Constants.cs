@@ -10,7 +10,6 @@ namespace ITiles {
 
         // SETUP
         BROADCAST = 0x01,
-        ASSIGN_ID = 0x03, // MASTER -> STANDARD
         UNPAIR = 0x04,
         QUERY_PAIRED_TILES = 0x05,
         QUERY_ONLINE_TILES = 0x06,
@@ -39,7 +38,6 @@ namespace ITiles {
     public enum RX_COMMAND : byte
     {
         START_BYTE = 0xAA,
-        REQUEST_TILE_ID = 0x02,
         REPLY_PAIRED_TILES = 0x07,
         REPLY_ONLINE_TILES = 0x08,
         TOUCH = 0x12,

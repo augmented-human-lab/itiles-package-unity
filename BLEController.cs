@@ -146,9 +146,6 @@ public class BLEController : MonoBehaviour
         Array.Copy(byteMessage, 3, iTileMessage.parameters, 0, iTileMessage.parameters.Length);
 
         switch (iTileMessage.command) {
-            case (byte)RX_COMMAND.REQUEST_TILE_ID:
-                OnRequestTileID(iTileMessage.tileId, iTileMessage.parameters);
-                break;
             case (byte)RX_COMMAND.REPLY_PAIRED_TILES:
                 OnReplyPairedTiles(iTileMessage.tileId, iTileMessage.parameters);
                 break;
@@ -172,17 +169,6 @@ public class BLEController : MonoBehaviour
                 break;
         }
         return iTileMessage;
-    }
-
-    public void OnRequestTileID(byte tileId, byte[] standardTileMacAddress)
-    {
-        Debug.Log("Tile ID: " + tileId + " is requesting for a tile id to be assigned");
-        string mac = "";
-        for (int i = 1; i < standardTileMacAddress.Length; i++)
-        {
-            mac += i + ":";
-        }
-        Debug.Log("Their Mac address: " + mac);
     }
 
     public void OnReplyPairedTiles(byte tileId, byte[] parameters)
@@ -253,16 +239,6 @@ public class BLEController : MonoBehaviour
     public void BroadcastCommand(byte[] masterTileMacAddress)
     {
         SendCommand(TX_COMMAND.BROADCAST, masterTileMacAddress);
-    }
-
-    // Method to send the ASSIGN_ID command with the tile ID to a STANDARD tile
-    public void AssignTileID(byte tileID)
-    {
-        if (tileID < 0x01 || tileID > 0x7f)
-        {
-            throw new ArgumentException("Standard tile Id must be within 0x01 to 0x7f");
-        }
-        SendCommand(TX_COMMAND.ASSIGN_ID, new byte[] { tileID });
     }
 
     // Method to send the UNPAIR command
