@@ -1,3 +1,5 @@
+using System;
+
 namespace ITiles {
 
     // [APP -> MASTER -> STANDARD] COMMANDS
@@ -76,7 +78,7 @@ namespace ITiles {
         ALL = 0xff
     }
 
-    public enum SELECT_SIDE: byte
+    public enum TILE_SIDE: byte
     {
         I = 0x01,
         II = 0x02,
@@ -142,10 +144,10 @@ namespace ITiles {
         OFF_ITILE = 0x01
     }
 
-    public enum SIDE: byte
+    public enum PAIR_STATUS: byte
     {
-        UNPAIR = 0x00,
-        PAIR = 0x01
+        UNPAIRED = 0x00,
+        PAIRED = 0x01
     }
 
     public enum VIBRATION_PATTERN: byte {
@@ -305,16 +307,96 @@ namespace ITiles {
         public byte tile_id;
         public byte reaction_time_high_byte;
         public byte reaction_time_low_byte;
-        public TOUCH_RESPONSE(string string_message, byte[] byte_message, byte tile_id, byte reaction_time_low_byte, byte reaction_time_high_byte)
+        public TOUCH_RESPONSE(string string_message, byte[] byte_message)
         {
             this.string_message = string_message;
             this.byte_message = byte_message;
-            this.tile_id = tile_id;
-            this.reaction_time_high_byte = reaction_time_high_byte;
-            this.reaction_time_low_byte = reaction_time_low_byte;
+            this.tile_id = byte_message[1];
+            this.reaction_time_high_byte = byte_message[3];
+            this.reaction_time_low_byte = byte_message[2];
         }
         public int GetReactionTime() {
             return (reaction_time_high_byte << 8) | reaction_time_low_byte;
+        }
+    }
+
+    public struct SHAKE_RESPONSE
+    {
+        public string string_message;
+        public byte[] byte_message;
+        public byte tile_id;
+        public byte reaction_time_high_byte;
+        public byte reaction_time_low_byte;
+        public SHAKE_RESPONSE(string string_message, byte[] byte_message)
+        {
+            this.string_message = string_message;
+            this.byte_message = byte_message;
+            this.tile_id = byte_message[1];
+            this.reaction_time_high_byte = byte_message[2];
+            this.reaction_time_low_byte = byte_message[3];
+        }
+        public int GetReactionTime()
+        {
+            return (reaction_time_high_byte << 8) | reaction_time_low_byte;
+        }
+    }
+
+    public struct SIDE_UPDATE_RESPONSE {
+        public byte updated_tile_id;
+        public byte updated_tile_side;
+        public byte unknown_parameter;
+        public byte side_pair_status;
+        // AA     04     13     03     06     01     EF
+        // [SB]   [TID]  [CMD]  [?]    [SIDE] [PAIR]     [EB]
+        public SIDE_UPDATE_RESPONSE(byte[] byte_message) {
+            updated_tile_id = byte_message[1];
+            unknown_parameter = byte_message[3];
+            updated_tile_side = byte_message[4];
+            side_pair_status = byte_message[5];
+        }
+    }
+
+    public struct PAIRED_TILES_RESPONSE
+    {
+        public byte[] paired_tile_ids;
+        public int paired_tile_total;
+        private string paired_tile_ids_list;
+        public PAIRED_TILES_RESPONSE(byte[] byte_message)
+        {
+            paired_tile_ids_list = string.Empty;
+            paired_tile_total = Convert.ToInt32(byte_message[3]);
+            paired_tile_ids = new byte[paired_tile_total];
+            for (int i = 0; i < paired_tile_total; i++)
+            {
+                paired_tile_ids_list += (byte_message[i + 4] + " ");
+                paired_tile_ids[i] = byte_message[i + 4];
+            }
+        }
+        public string GetPairedTileIds()
+        {
+            return paired_tile_ids_list;
+        }
+    }
+
+    public struct ONLINE_TILES_RESPONSE {
+        public byte tile_id;
+        public int battary;
+        public int hardware_version;
+        public int firmware_version;
+        public ONLINE_TILES_RESPONSE(byte[] message) {
+            tile_id = message[1];
+            battary = Convert.ToInt32(message[3]);
+            hardware_version = Convert.ToInt32(message[4]);
+            firmware_version = Convert.ToInt32(message[5]);
+        }
+    }
+
+    public struct STEP_CHANGE_RESPONSE {
+        public byte tile_id;
+        public byte step_status;
+        public STEP_CHANGE_RESPONSE(byte[] message) {
+            tile_id = message[1];
+            step_status = message[3];
         }
     }
 

@@ -9,11 +9,8 @@ public class BLEController : MonoBehaviour
 
     #region Subscribable itile events
 
-    public delegate void DataReceivedEventHandler(string value);
+    public delegate void DataReceivedEventHandler(string data);
     public event DataReceivedEventHandler DataReceived;
-
-    public delegate void DataReceivedDecomposedEventHandler(ITileMessage iTileMessage);
-    public event DataReceivedDecomposedEventHandler DataReceivedDecomposed;
 
     public delegate void ITilesIDsDiscoveredEventHandler(string devices);
     public event ITilesIDsDiscoveredEventHandler ITilesIDsDiscovered;
@@ -25,17 +22,23 @@ public class BLEController : MonoBehaviour
     public delegate void ITileTouchedEventHandler(TOUCH_RESPONSE touch_response);
     public event ITileTouchedEventHandler ITileTouched;
 
-    public delegate void ITileShakedEventHandler();
+    public delegate void ITileShakedEventHandler(SHAKE_RESPONSE shake_response);
     public event ITileShakedEventHandler ITileShaked;
 
-    public delegate void ITileSideUpdatedEventHandler();
+    public delegate void ITileSideUpdatedEventHandler(SIDE_UPDATE_RESPONSE side_update_response);
     public event ITileSideUpdatedEventHandler ITileSideUpdated;
 
-    public delegate void ITileStepChangedEventHandler();
+    public delegate void ITileStepChangedEventHandler(STEP_CHANGE_RESPONSE step_change_response);
     public event ITileStepChangedEventHandler ITileStepChanged;
 
     public delegate void ITileTimedOutEventHandler();
     public event ITileTimedOutEventHandler ITileTimedOut;
+
+    public delegate void PairedITileListReceivedEventHandler(PAIRED_TILES_RESPONSE paired_tile_response);
+    public event PairedITileListReceivedEventHandler PairedITileListReceived;
+
+    public delegate void OnlineITileStatusReceivedEventHandler(ONLINE_TILES_RESPONSE online_tile_response);
+    public event OnlineITileStatusReceivedEventHandler OnlineITileStatusReceived;
 
     #endregion
 
@@ -70,7 +73,7 @@ public class BLEController : MonoBehaviour
     public void ReceiveData(string value) 
     {
         DataReceived?.Invoke(value);
-        DataReceivedDecomposed?.Invoke(ReadMessage(value));
+        ReadMessage(value);
     }
 
     #endregion
@@ -130,11 +133,10 @@ public class BLEController : MonoBehaviour
     }
 
     // Method to decompose received command from the BLE device
-    private ITileMessage ReadMessage(string message) 
+    private void ReadMessage(string message) 
     {
-
         ITileMessage iTileMessage = new ITileMessage();
-        Debug.Log("SANKHA UNITY >>>> " + message);
+        Debug.Log("ITILE MESSAGE >>>> " + message);
         byte[] byteMessage = HexStringToByteArray(message);
 
         // Command packet format: [Start Byte][Tile ID][Command][Length][Parameters][End Byte]
@@ -147,91 +149,27 @@ public class BLEController : MonoBehaviour
 
         switch (iTileMessage.command) {
             case (byte)RX_COMMAND.REPLY_PAIRED_TILES:
-                OnReplyPairedTiles(iTileMessage.tileId, iTileMessage.parameters);
+                PairedITileListReceived?.Invoke(new PAIRED_TILES_RESPONSE(byteMessage));
                 break;
             case (byte)RX_COMMAND.REPLY_ONLINE_TILES:
-                OnReplyOnlineTiles(iTileMessage.tileId, iTileMessage.parameters);
+                OnlineITileStatusReceived?.Invoke(new ONLINE_TILES_RESPONSE(byteMessage));
                 break;
             case (byte)RX_COMMAND.SHAKE:
-                OnTileShake(iTileMessage.tileId, iTileMessage.parameters);
+                ITileShaked?.Invoke(new SHAKE_RESPONSE(message, byteMessage));
                 break;
             case (byte)RX_COMMAND.SIDE_UPDATE:
-                OnSideUpdate(iTileMessage.tileId, iTileMessage.parameters);
+                ITileSideUpdated?.Invoke(new SIDE_UPDATE_RESPONSE(byteMessage));
                 break;
             case (byte)RX_COMMAND.STEP_CHANGE:
-                OnStepChange(iTileMessage.tileId, iTileMessage.parameters);
+                ITileStepChanged?.Invoke(new STEP_CHANGE_RESPONSE(byteMessage));
                 break;
             case (byte)RX_COMMAND.TILE_TIMEOUT:
-                OnTileTimeout();
+                ITileTimedOut?.Invoke();
                 break;
             case (byte)RX_COMMAND.TOUCH:
-                OnTileTouch(message, byteMessage);
+                ITileTouched?.Invoke(new TOUCH_RESPONSE(message, byteMessage));
                 break;
         }
-        return iTileMessage;
-    }
-
-    public void OnReplyPairedTiles(byte tileId, byte[] parameters)
-    {
-        Debug.Log("NO OF TILES PAIRED: " + Convert.ToInt32(parameters[0]));
-        Debug.Log("They are..");
-        for (int i = 1; i < parameters.Length; i++) {
-            Debug.Log("Tile: " + i);
-        }
-    }
-
-    public void OnReplyOnlineTiles(byte tileId, byte[] parameters)
-    {
-        Debug.Log("Tile online: " + tileId);
-        Debug.Log("Battary: " + Convert.ToInt32(parameters[0]));
-        Debug.Log("Hardware version: " + Convert.ToInt32(parameters[1]));
-        Debug.Log("Firmware version: " + Convert.ToInt32(parameters[2]));
-    }
-
-    public void OnTileTouch(string message, byte[] rawMessage) 
-    {
-        ITileTouched(new TOUCH_RESPONSE(message, rawMessage, rawMessage[1], rawMessage[3], rawMessage[2]));
-    }
-
-    public void OnTileShake(byte tileId, byte[] parameters)
-    {
-
-        Debug.Log("TILE HAS BEEN SHAKED...");
-        Debug.Log("Which Tile: " + parameters[0]);
-        int reactionTime = (parameters[1] << 8) | parameters[2];
-        Debug.Log("Reaction time: " + reactionTime);
-        ITileShaked();
-    }
-
-    public void OnTileTimeout() 
-    {
-        Debug.Log("A TILE HAS BEEN Timed out...");
-        ITileTimedOut();
-    }
-
-    // ToDo: TEST
-    public void OnSideUpdate(byte tileId, byte[] parameters) 
-    {
-        // 2023/09/21 23:46:37.365 31916 28983 Info Unity AA 00  13  03 05 00 EF
-                                                       // SB TID CMD 
-        Debug.Log("A TILE SIDE HAS BEEN UPDATED");
-        Debug.Log("Which Tile: " + tileId);
-        Debug.Log("which side: " + parameters[0]);
-        Debug.Log("Unpair or pair: " + parameters[1]);
-        int reactionTime = (parameters[2] << 8) | parameters[3];
-        Debug.Log("Reaction time: " + reactionTime);
-        ITileSideUpdated();
-    }
-
-    // ToDo: TEST
-    public void OnStepChange(byte tileId, byte[] parameters) 
-    {
-        Debug.Log("Someone has stepped on or off tile");
-        Debug.Log("Which Tile: " + tileId);
-        Debug.Log("Step on or off: " + parameters[0]);
-        int reactionTime = (parameters[1] << 8) | parameters[2];
-        Debug.Log("Reaction time: " + reactionTime);
-        ITileStepChanged();
     }
 
     // Method to send the BROADCAST command with the MASTER tile mac address
@@ -256,7 +194,7 @@ public class BLEController : MonoBehaviour
     // Method to send the QUERY_ONLINE_TILES command
     public void QueryOnlineTiles()
     {
-        SendCommand(TX_COMMAND.QUERY_ONLINE_TILES, new byte[0], SELECT_ITILE.I);
+        SendCommand(TX_COMMAND.QUERY_ONLINE_TILES, new byte[0], SELECT_ITILE.ALL);
     }
 
     // WORKS!
