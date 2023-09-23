@@ -182,7 +182,7 @@ public class BLEController : MonoBehaviour
     // Method to send the UNPAIR command
     public void UnpairTile(SELECT_ITILE tileID)
     {
-        SendCommand(TX_COMMAND.UNPAIR, new byte[] { (byte)tileID });
+        SendCommand(TX_COMMAND.UNPAIR, new byte[] { (byte)tileID }, tileID);
     }
 
     // Method to send the QUERY_PAIRED_TILES command
@@ -304,12 +304,7 @@ public class BLEController : MonoBehaviour
 
     // WORKS!
     public void SuperTrigger(
-        byte side1RedIntensity, byte side1GreenIntensity, byte side1BlueIntensity,
-        byte side2RedIntensity, byte side2GreenIntensity, byte side2BlueIntensity,
-        byte side3RedIntensity, byte side3GreenIntensity, byte side3BlueIntensity,
-        byte side4RedIntensity, byte side4GreenIntensity, byte side4BlueIntensity,
-        byte side5RedIntensity, byte side5GreenIntensity, byte side5BlueIntensity,
-        byte side6RedIntensity, byte side6GreenIntensity, byte side6BlueIntensity,
+        SIDE_COLORS sideColor,
         TIMEOUT_DELAY timeoutDelay,
         byte soundTrackId,
         byte NOT_IMPLEMENTED_1,
@@ -321,12 +316,12 @@ public class BLEController : MonoBehaviour
     )
     {
         byte[] parameters = new byte[] {
-            side1RedIntensity, side1GreenIntensity, side1BlueIntensity,
-            side2RedIntensity, side2GreenIntensity, side2BlueIntensity,
-            side3RedIntensity, side3GreenIntensity, side3BlueIntensity,
-            side4RedIntensity, side4GreenIntensity, side4BlueIntensity,
-            side5RedIntensity, side5GreenIntensity, side5BlueIntensity,
-            side6RedIntensity, side6GreenIntensity, side6BlueIntensity,
+            sideColor.SIDE_1.R, sideColor.SIDE_1.G, sideColor.SIDE_1.B,
+            sideColor.SIDE_2.R, sideColor.SIDE_2.G, sideColor.SIDE_2.B,
+            sideColor.SIDE_3.R, sideColor.SIDE_3.G, sideColor.SIDE_3.B,
+            sideColor.SIDE_4.R, sideColor.SIDE_4.G, sideColor.SIDE_4.B,
+            sideColor.SIDE_5.R, sideColor.SIDE_5.G, sideColor.SIDE_5.B,
+            sideColor.SIDE_6.R, sideColor.SIDE_6.G, sideColor.SIDE_6.B,
             (byte)timeoutDelay,
             soundTrackId,
             NOT_IMPLEMENTED_1,

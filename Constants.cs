@@ -360,12 +360,12 @@ namespace ITiles {
         public PAIRED_TILES_RESPONSE(byte[] byte_message)
         {
             paired_tile_ids_list = string.Empty;
-            paired_tile_total = Convert.ToInt32(byte_message[3]);
+            paired_tile_total = Convert.ToInt32(byte_message[4]);
             paired_tile_ids = new byte[paired_tile_total];
             for (int i = 0; i < paired_tile_total; i++)
             {
-                paired_tile_ids_list += (byte_message[i + 4] + " ");
-                paired_tile_ids[i] = byte_message[i + 4];
+                paired_tile_ids_list += (byte_message[i + 5] + " ");
+                paired_tile_ids[i] = byte_message[i + 5];
             }
         }
         public string GetPairedTileIds()
