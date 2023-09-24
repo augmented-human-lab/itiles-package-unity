@@ -64,7 +64,7 @@ void QueryOnlineTiles()
 ```
 
 ```csharp
-TriggerLight (
+void TriggerLight (
   TILE_COLOR color, 
   TIMEOUT_DELAY offAfterSeconds, 
   LOG_REACTION_TIME logReactionTime, 
