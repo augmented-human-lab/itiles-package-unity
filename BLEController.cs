@@ -182,7 +182,7 @@ public class BLEController : MonoBehaviour
     // Method to send the UNPAIR command
     public void UnpairTile(SELECT_ITILE tileID)
     {
-        SendCommand(TX_COMMAND.UNPAIR, new byte[] { (byte)tileID }, tileID);
+        SendCommand(TX_COMMAND.UNPAIR, new byte[0], tileID);
     }
 
     // Method to send the QUERY_PAIRED_TILES command

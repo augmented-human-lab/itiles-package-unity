@@ -302,53 +302,45 @@ namespace ITiles {
     }
 
     public struct TOUCH_RESPONSE {
-        public byte[] byte_message;
         public byte tile_id;
-        public byte reaction_time_high_byte;
-        public byte reaction_time_low_byte;
-        public TOUCH_RESPONSE(byte[] byte_message)
+        public byte reaction_time_upper_byte;
+        public byte reaction_time_lower_byte;
+        public TOUCH_RESPONSE(byte[] message)
         {
-            this.byte_message = byte_message;
-            this.tile_id = byte_message[1];
-            this.reaction_time_high_byte = byte_message[3];
-            this.reaction_time_low_byte = byte_message[2];
+            tile_id = message[1];
+            reaction_time_lower_byte = message[4];
+            reaction_time_upper_byte = message[5];
         }
-        public int GetReactionTime() {
-            return (reaction_time_high_byte << 8) | reaction_time_low_byte;
+        public float GetReactionTime() {
+            return ((reaction_time_upper_byte << 8) | reaction_time_lower_byte)/1000f;
         }
     }
 
     public struct SHAKE_RESPONSE
     {
-        public byte[] byte_message;
         public byte tile_id;
-        public byte reaction_time_high_byte;
-        public byte reaction_time_low_byte;
-        public SHAKE_RESPONSE(byte[] byte_message)
+        public byte reaction_time_upper_byte;
+        public byte reaction_time_lower_byte;
+        public SHAKE_RESPONSE(byte[] message)
         {
-            this.byte_message = byte_message;
-            this.tile_id = byte_message[1];
-            this.reaction_time_high_byte = byte_message[2];
-            this.reaction_time_low_byte = byte_message[3];
+            tile_id = message[1];
+            reaction_time_lower_byte = message[4];
+            reaction_time_upper_byte = message[5];
         }
-        public int GetReactionTime()
+        public float GetReactionTime()
         {
-            return (reaction_time_high_byte << 8) | reaction_time_low_byte;
+            return ((reaction_time_upper_byte << 8) | reaction_time_lower_byte)/1000f;
         }
     }
 
     public struct SIDE_UPDATE_RESPONSE {
         public byte updated_tile_id;
         public byte updated_tile_side;
-        public byte unknown_parameter;
         public byte side_pair_status;
-        // AA     04     13     03     06     01     EF
-        // [SB]   [TID]  [CMD]  [?]    [SIDE] [PAIR]     [EB]
-        public SIDE_UPDATE_RESPONSE(byte[] byte_message) {
-            updated_tile_id = byte_message[1];
-            unknown_parameter = byte_message[3];
-            updated_tile_side = byte_message[4];
-            side_pair_status = byte_message[5];
+        public SIDE_UPDATE_RESPONSE(byte[] message) {
+            updated_tile_id = message[1];
+            updated_tile_side = message[4];
+            side_pair_status = message[5];
         }
     }
 
@@ -357,15 +349,15 @@ namespace ITiles {
         public byte[] paired_tile_ids;
         public int paired_tile_total;
         private string paired_tile_ids_list;
-        public PAIRED_TILES_RESPONSE(byte[] byte_message)
+        public PAIRED_TILES_RESPONSE(byte[] message)
         {
             paired_tile_ids_list = string.Empty;
-            paired_tile_total = Convert.ToInt32(byte_message[4]);
+            paired_tile_total = Convert.ToInt32(message[4]);
             paired_tile_ids = new byte[paired_tile_total];
             for (int i = 0; i < paired_tile_total; i++)
             {
-                paired_tile_ids_list += (byte_message[i + 5] + " ");
-                paired_tile_ids[i] = byte_message[i + 5];
+                paired_tile_ids_list += (message[i + 5] + " ");
+                paired_tile_ids[i] = message[i + 5];
             }
         }
         public string GetPairedTileIds()
@@ -376,14 +368,23 @@ namespace ITiles {
 
     public struct ONLINE_TILES_RESPONSE {
         public byte tile_id;
-        public int battary;
+        public byte battary_lower_byte;
+        public byte battary_upper_byte;
         public int hardware_version;
         public int firmware_version;
         public ONLINE_TILES_RESPONSE(byte[] message) {
             tile_id = message[1];
-            battary = Convert.ToInt32(message[3]);
-            hardware_version = Convert.ToInt32(message[4]);
-            firmware_version = Convert.ToInt32(message[5]);
+            battary_lower_byte = message[4];
+            battary_upper_byte = message[5];
+            hardware_version = Convert.ToInt32(message[6]);
+            firmware_version = Convert.ToInt32(message[7]);
+        }
+        public int GetBattaryPower() {
+            int BATTARY_MAX = 420;
+            int BATTARY_MIN = 330;
+            int BATTARY_NOW = (battary_upper_byte << 8) | battary_lower_byte;
+            int BATTARY_PERCENTAGE = (BATTARY_NOW - BATTARY_MIN) * 100 / (BATTARY_MAX - BATTARY_MIN);
+            return BATTARY_PERCENTAGE;
         }
     }
 
