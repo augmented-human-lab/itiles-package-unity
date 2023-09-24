@@ -20,7 +20,7 @@ public class BLEDataCallbackProxy : AndroidJavaProxy, BLEDataCallback
     }
 
     public void onConnectionStateChanged(int connectionState) {
-        targetMonoBehaviour.OnConnectionStateChanged(connectionState);
+        targetMonoBehaviour.OnConnectionStateChanged((CONNECTION_STATE)connectionState);
     }
 
 }

@@ -16,9 +16,8 @@ public class BLEController : MonoBehaviour
     public delegate void ITilesIDsDiscoveredEventHandler(List<string> discovered_itiles);
     public event ITilesIDsDiscoveredEventHandler ITilesIDsDiscovered;
 
-    public delegate void ConnectionStateChangedEventHandler(int connectionState);
+    public delegate void ConnectionStateChangedEventHandler(CONNECTION_STATE connectionState);
     public event ConnectionStateChangedEventHandler ConnectionStateChanged;
-
 
     public delegate void ITileTouchedEventHandler(TOUCH_RESPONSE touch_response);
     public event ITileTouchedEventHandler ITileTouched;
@@ -61,7 +60,7 @@ public class BLEController : MonoBehaviour
     }
     #region Event Invoker methods
 
-    public void OnConnectionStateChanged(int connectionState) 
+    public void OnConnectionStateChanged(CONNECTION_STATE connectionState) 
     {
         ConnectionStateChanged?.Invoke(connectionState);
     }
@@ -387,12 +386,6 @@ public class BLEController : MonoBehaviour
         return byteArray;
     }
 
-    public static string ByteArrayToHexString(byte[] bytes) {
-        foreach (byte b in bytes) {
-            Debug.LogWarning(b);
-        }
-        return Encoding.UTF8.GetString(bytes);
-    }
     #endregion
 
 }
