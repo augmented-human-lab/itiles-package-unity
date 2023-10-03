@@ -333,11 +333,11 @@ namespace ITiles {
         }
     }
 
-    public struct SIDE_UPDATE_RESPONSE {
+    public struct SIDE_PAIR_RESPONSE {
         public byte updated_tile_id;
         public byte updated_tile_side;
         public byte side_pair_status;
-        public SIDE_UPDATE_RESPONSE(byte[] message) {
+        public SIDE_PAIR_RESPONSE(byte[] message) {
             updated_tile_id = message[1];
             updated_tile_side = message[4];
             side_pair_status = message[5];

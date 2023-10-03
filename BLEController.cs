@@ -1,7 +1,6 @@
 using UnityEngine;
 using System;
 using ITiles;
-using System.Text;
 using System.Collections.Generic;
 
 public class BLEController : MonoBehaviour
@@ -13,8 +12,8 @@ public class BLEController : MonoBehaviour
     public delegate void DataReceivedEventHandler(string data);
     public event DataReceivedEventHandler DataReceived;
 
-    public delegate void ITilesIDsDiscoveredEventHandler(List<string> discovered_itiles);
-    public event ITilesIDsDiscoveredEventHandler ITilesIDsDiscovered;
+    public delegate void MasterTilesDiscoveredEventHandler(List<string> discovered_itiles);
+    public event MasterTilesDiscoveredEventHandler MasterTilesDiscovered;
 
     public delegate void ConnectionStateChangedEventHandler(CONNECTION_STATE connectionState);
     public event ConnectionStateChangedEventHandler ConnectionStateChanged;
@@ -25,8 +24,8 @@ public class BLEController : MonoBehaviour
     public delegate void ITileShakedEventHandler(SHAKE_RESPONSE shake_response);
     public event ITileShakedEventHandler ITileShaked;
 
-    public delegate void ITileSideUpdatedEventHandler(SIDE_UPDATE_RESPONSE side_update_response);
-    public event ITileSideUpdatedEventHandler ITileSideUpdated;
+    public delegate void ITileSidePairedEventHandler(SIDE_PAIR_RESPONSE side_pair_response);
+    public event ITileSidePairedEventHandler ITileSidePaired;
 
     public delegate void ITileStepChangedEventHandler(STEP_CHANGE_RESPONSE step_change_response);
     public event ITileStepChangedEventHandler ITileStepChanged;
@@ -41,6 +40,14 @@ public class BLEController : MonoBehaviour
     public event OnlineITileStatusReceivedEventHandler OnlineITileStatusReceived;
 
     #endregion
+
+    public static BLEController itile;
+
+    private void Awake()
+    {
+        DontDestroyOnLoad(this.gameObject);
+        itile = this;
+    }
 
     void Start()
     {
@@ -65,22 +72,22 @@ public class BLEController : MonoBehaviour
         ConnectionStateChanged?.Invoke(connectionState);
     }
 
-    public void DiscoveredITilesIDs(string deviceIds) 
+    public void DiscoveredMasterTiles(string deviceIds) 
     {
         string preProcessedJson = "{\"discoveredItileIds\": #}".Replace("#", deviceIds);
         TileIdList jsonData = JsonUtility.FromJson<TileIdList>(preProcessedJson);
-        List<string> iTileIds = new List<string>();
+        List<string> masterTileIds = new List<string>();
         foreach (string id in jsonData.discoveredItileIds)
         {
-            iTileIds.Add(id);
+            masterTileIds.Add(id);
         }
-        ITilesIDsDiscovered?.Invoke(iTileIds);
+        MasterTilesDiscovered?.Invoke(masterTileIds);
     }
 
     public void ReceiveData(string value) 
     {
         DataReceived?.Invoke(value);
-        ReadMessage(value);
+        DecodeMessage(value);
     }
 
     #endregion
@@ -140,40 +147,39 @@ public class BLEController : MonoBehaviour
     }
 
     // Method to decompose received command from the BLE device
-    private void ReadMessage(string message) 
+    private void DecodeMessage(string message) 
     {
         byte[] byteMessage = HexStringToByteArray(message);
 
         // Command packet format: [Start Byte][Tile ID][Command][Length][Parameters][End Byte]
 
-        switch (byteMessage[2]) {
-            case (byte)RX_COMMAND.REPLY_PAIRED_TILES:
+        switch ((RX_COMMAND)byteMessage[2]) {
+            case RX_COMMAND.REPLY_PAIRED_TILES:
                 PairedITileListReceived?.Invoke(new PAIRED_TILES_RESPONSE(byteMessage));
                 break;
-            case (byte)RX_COMMAND.REPLY_ONLINE_TILES:
+            case RX_COMMAND.REPLY_ONLINE_TILES:
                 OnlineITileStatusReceived?.Invoke(new ONLINE_TILES_RESPONSE(byteMessage));
                 break;
-            case (byte)RX_COMMAND.SHAKE:
+            case RX_COMMAND.SHAKE:
                 ITileShaked?.Invoke(new SHAKE_RESPONSE(byteMessage));
                 break;
-            case (byte)RX_COMMAND.SIDE_UPDATE:
-                ITileSideUpdated?.Invoke(new SIDE_UPDATE_RESPONSE(byteMessage));
+            case RX_COMMAND.SIDE_UPDATE:
+                ITileSidePaired?.Invoke(new SIDE_PAIR_RESPONSE(byteMessage));
                 break;
-            case (byte)RX_COMMAND.STEP_CHANGE:
+            case RX_COMMAND.STEP_CHANGE:
                 ITileStepChanged?.Invoke(new STEP_CHANGE_RESPONSE(byteMessage));
                 break;
-            case (byte)RX_COMMAND.TILE_TIMEOUT:
+            case RX_COMMAND.TILE_TIMEOUT:
                 ITileTimedOut?.Invoke();
                 break;
-            case (byte)RX_COMMAND.TOUCH:
+            case RX_COMMAND.TOUCH:
                 ITileTouched?.Invoke(new TOUCH_RESPONSE(byteMessage));
                 break;
         }
     }
 
     // Method to send the BROADCAST command with the MASTER tile mac address
-    // WORKS!
-    public void BroadcastCommand(byte[] masterTileMacAddress)
+    public void PairTiles(byte[] masterTileMacAddress)
     {
         SendCommand(TX_COMMAND.BROADCAST, masterTileMacAddress);
     }
@@ -196,7 +202,7 @@ public class BLEController : MonoBehaviour
         SendCommand(TX_COMMAND.QUERY_ONLINE_TILES, new byte[0], SELECT_ITILE.ALL);
     }
 
-    // WORKS!
+    // Turn on lights
     public void TriggerLight(
         TILE_COLOR color,
         TIMEOUT_DELAY offAfterSeconds,
@@ -210,7 +216,6 @@ public class BLEController : MonoBehaviour
     }
 
     // Method to play a sound
-    // WORKS!
     public void TriggerSound(
         byte soundTrackID,
         REPEAT_COUNT repeatCount,
@@ -224,8 +229,7 @@ public class BLEController : MonoBehaviour
     }
 
     // Method to vibrate a tile
-    // WORKS!
-    public void TriggerVibrate(
+    public void TriggerVibration(
         VIBRATION_PATTERN vibrationPatternID,
         REPEAT_COUNT repeatCount,
         LOG_REACTION_TIME logReactionTime,
@@ -237,8 +241,7 @@ public class BLEController : MonoBehaviour
     }
 
     // Method to light up tile sides
-    // WORKS!
-    public void TriggerSide(
+    public void TriggerLight(
         SIDE_COLORS sideColors,
         TIMEOUT_DELAY offAfterSeconds,
         LOG_REACTION_TIME logReactionTime,
@@ -261,7 +264,7 @@ public class BLEController : MonoBehaviour
 
     // Method to trigger tile light, sound, vibration all at once
     // WORKS!
-    public void AdvancedTrigger(
+    public void TriggerLightSoundVibration(
         byte redIntensity,
         byte greenIntensity,
         byte blueIntensity,
@@ -289,20 +292,18 @@ public class BLEController : MonoBehaviour
         SendCommand(TX_COMMAND.ADVANCE_TRIGGER, parameters, tileId);
     }
 
-    // WORKS!
-    public void TurnOffLights(SELECT_ITILE tileId) 
+    public void TurnOffLight(SELECT_ITILE tileId) 
     {
         SendCommand(TX_COMMAND.OFF_LIGHT, new byte[0], tileId);
     }
 
     // Method to stop light effect on the tile
-    public void StopLightEffect(SELECT_ITILE tileId)
+    public void StopEffect(SELECT_ITILE tileId)
     {
         SendCommand(TX_COMMAND.STOP_EFFECT, new byte[0], tileId);
     }
 
-    // WORKS!
-    public void SuperTrigger(
+    public void TriggerLightSoundVibration(
         SIDE_COLORS sideColor,
         TIMEOUT_DELAY timeoutDelay,
         byte soundTrackId,
@@ -333,7 +334,7 @@ public class BLEController : MonoBehaviour
     }
 
     // Enable or disable accelerometer shake interrupt
-    public void ToggleAcceleration(
+    public void ToggleShakeSensor(
         TOGGLE_SENSOR toggle,
         SELECT_ITILE tileId
     ) 
@@ -342,7 +343,7 @@ public class BLEController : MonoBehaviour
     }
 
     // Set threshold for shake interrupt
-    public void SetAccelerationThreshold(
+    public void SetShakeThreshold(
         byte accelerationThreshold,
         SELECT_ITILE tileId
     ) 
@@ -350,7 +351,6 @@ public class BLEController : MonoBehaviour
         SendCommand(TX_COMMAND.SET_ACCEL_THRESHOLD, new byte[] { accelerationThreshold }, tileId);
     }
 
-    // WORKS!
     public void ToggleTouchSensor(
         TOGGLE_SENSOR toggle,
         SELECT_ITILE tileId

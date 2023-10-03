@@ -16,7 +16,7 @@ public class BLEDataCallbackProxy : AndroidJavaProxy, BLEDataCallback
 
     public void onITilesIDsDiscovered(string deviceIds)
     {
-        targetMonoBehaviour.DiscoveredITilesIDs(deviceIds);
+        targetMonoBehaviour.DiscoveredMasterTiles(deviceIds);
     }
 
     public void onConnectionStateChanged(int connectionState) {

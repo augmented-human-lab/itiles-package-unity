@@ -25,7 +25,7 @@ using ITiles;
 ## Methods (TX Messages to iTile Server)
 ```csharp
 // to initiate itile server scan
-// Subscribe to `ITilesIDsDiscovered` event to receive discovered itile server ids (mac addresses)
+// Subscribe to `MasterTilesDiscovered` event to receive discovered itile server ids (mac addresses)
 void StartScan()
 ```
 
@@ -43,7 +43,7 @@ void Connect(string deviceAddress);
 ```csharp
 // to initiate standard tile paring
 // once initiated touch on standard tiles to complete pair with master
-void BroadcastCommand(byte[] masterTileMacAddress)
+void PairTiles(byte[] masterTileMacAddress)
 ```
 
 ```csharp
@@ -65,7 +65,7 @@ void QueryOnlineTiles()
 
 ```csharp
 void TriggerLight (
-  TILE_COLOR color, 
+  TILE_COLOR color | SIDE_COLORS sideColors, 
   TIMEOUT_DELAY offAfterSeconds, 
   LOG_REACTION_TIME logReactionTime, 
   TIMEOUT_RESPONSE timeoutResponse, 
@@ -84,7 +84,7 @@ void TriggerSound (
 ```
 
 ```csharp
-void TriggerVibrate(
+void TriggerVibration(
   VIBRATION_PATTERN vibrationPatternID,
   REPEAT_COUNT repeatCount,
   LOG_REACTION_TIME logReactionTime,
@@ -94,20 +94,8 @@ void TriggerVibrate(
 ```
 
 ```csharp
-void TriggerSide(
-  SIDE_COLORS sideColors,
-  TIMEOUT_DELAY offAfterSeconds,
-  LOG_REACTION_TIME logReactionTime,
-  TIMEOUT_RESPONSE timeoutResponse,
-  SELECT_ITILE tileId
-)
-```
-
-```csharp
-void AdvancedTrigger(
-  byte redIntensity,
-  byte greenIntensity,
-  byte blueIntensity,
+void TriggerLightSoundVibration(
+  byte redIntensity, byte greenIntensity, byte blueIntensity | SIDE_COLORS sideColor,
   TIMEOUT_DELAY timeoutDelay,
   byte soundTrackId,
   byte NOT_IMPLEMENTED_1,
@@ -120,21 +108,7 @@ void AdvancedTrigger(
 ```
 
 ```csharp
-void TurnOffLights(SELECT_ITILE tileId)
-```
-
-```csharp
-void SuperTrigger(
-  SIDE_COLORS sideColor,
-  TIMEOUT_DELAY timeoutDelay,
-  byte soundTrackId,
-  byte NOT_IMPLEMENTED_1,
-  VIBRATION_PATTERN vibrationPattern,
-  REPEAT_COUNT repeatCount,
-  LOG_REACTION_TIME logReactionTime,
-  TIMEOUT_RESPONSE timeoutResponse,
-  SELECT_ITILE tileId
-)
+void TurnOffLight(SELECT_ITILE tileId)
 ```
 
 ```csharp
@@ -142,11 +116,11 @@ void ToggleTouchSensor(TOGGLE_SENSOR toggle, SELECT_ITILE tileId)
 ```
 
 ```csharp
-void ToggleAcceleration(TOGGLE_SENSOR toggle, SELECT_ITILE tileId) 
+void ToggleShakeSensor(TOGGLE_SENSOR toggle, SELECT_ITILE tileId) 
 ```
 
 ```csharp
-void SetAccelerationThreshold(byte accelerationThreshold, SELECT_ITILE tileId) 
+void SetShakeThreshold(byte accelerationThreshold, SELECT_ITILE tileId) 
 ```
 
 ## Events - Basic (RX Messages from iTile Server)
@@ -158,7 +132,7 @@ DataReceived(string data)
 
 ```csharp
 // mac addresses of any visible iTile server (master tile)
-ITilesIDsDiscovered(List<string> discovered_itiles)
+MasterTilesDiscovered(List<string> discovered_itiles)
 ```
 
 ```csharp
@@ -200,7 +174,7 @@ ITileTimedOut()
 
 ```csharp
 // notifies a itile side is paired with another
-ITileSideUpdated(SIDE_UPDATE_RESPONSE sideUpdateResponse)
+ITileSidePaired(SIDE_PAIR_RESPONSE sidePairResponse)
 ```
 
 
