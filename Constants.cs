@@ -163,6 +163,11 @@ namespace ITiles {
         IX = 0x09
     }
 
+    public enum SOUND_TRACK : byte { 
+        NONE = 0x00,
+        DEFAULT = 0x01
+    }
+
     public enum REPEAT_COUNT : byte {
         I = 0x01,
         II = 0x02,

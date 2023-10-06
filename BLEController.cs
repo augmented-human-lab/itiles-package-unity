@@ -146,7 +146,6 @@ public class BLEController : MonoBehaviour
         bleManager.Call("write", sbyteCmd);
     }
 
-    // Method to decompose received command from the BLE device
     private void DecodeMessage(string message) 
     {
         byte[] byteMessage = HexStringToByteArray(message);
@@ -178,31 +177,26 @@ public class BLEController : MonoBehaviour
         }
     }
 
-    // Method to send the BROADCAST command with the MASTER tile mac address
     public void PairTiles(byte[] masterTileMacAddress)
     {
         SendCommand(TX_COMMAND.BROADCAST, masterTileMacAddress);
     }
 
-    // Method to send the UNPAIR command
     public void UnpairTile(SELECT_ITILE tileID)
     {
         SendCommand(TX_COMMAND.UNPAIR, new byte[0], tileID);
     }
 
-    // Method to send the QUERY_PAIRED_TILES command
     public void QueryPairedTiles()
     {
         SendCommand(TX_COMMAND.QUERY_PAIRED_TILES, new byte[0]);
     }
 
-    // Method to send the QUERY_ONLINE_TILES command
     public void QueryOnlineTiles()
     {
         SendCommand(TX_COMMAND.QUERY_ONLINE_TILES, new byte[0], SELECT_ITILE.ALL);
     }
 
-    // Turn on lights
     public void TriggerLight(
         TILE_COLOR color,
         TIMEOUT_DELAY offAfterSeconds,
@@ -215,20 +209,18 @@ public class BLEController : MonoBehaviour
         SendCommand(TX_COMMAND.TRIGGER_LIGHT, parameters, tileId);
     }
 
-    // Method to play a sound
     public void TriggerSound(
-        byte soundTrackID,
+        SOUND_TRACK soundTrackID,
         REPEAT_COUNT repeatCount,
         LOG_REACTION_TIME logReactionTime,
         TIMEOUT_RESPONSE timeoutResponse,
         SELECT_ITILE tileId
     )
     {
-        byte[] parameters = new byte[] { soundTrackID, (byte)repeatCount, (byte)logReactionTime, (byte)timeoutResponse };
+        byte[] parameters = new byte[] { (byte)soundTrackID, (byte)repeatCount, (byte)logReactionTime, (byte)timeoutResponse };
         SendCommand(TX_COMMAND.TRIGGER_SOUND, parameters, tileId);
     }
 
-    // Method to vibrate a tile
     public void TriggerVibration(
         VIBRATION_PATTERN vibrationPatternID,
         REPEAT_COUNT repeatCount,
@@ -262,15 +254,10 @@ public class BLEController : MonoBehaviour
         throw new NotImplementedException();
     }
 
-    // Method to trigger tile light, sound, vibration all at once
-    // WORKS!
     public void TriggerLightSoundVibration(
-        byte redIntensity,
-        byte greenIntensity,
-        byte blueIntensity,
+        TILE_COLOR lightColor,
         TIMEOUT_DELAY timeoutDelay,
-        byte soundTrackId,
-        byte NOT_IMPLEMENTED_1,
+        SOUND_TRACK soundTrackId,
         VIBRATION_PATTERN vibrationPattern,
         REPEAT_COUNT repeatCount,
         LOG_REACTION_TIME logReactionTime,
@@ -278,12 +265,12 @@ public class BLEController : MonoBehaviour
         SELECT_ITILE tileId
     ) {
         byte[] parameters = new byte[] { 
-            redIntensity, 
-            greenIntensity, 
-            blueIntensity, 
+            lightColor.R, 
+            lightColor.G, 
+            lightColor.B, 
             (byte)timeoutDelay, 
-            soundTrackId,
-            NOT_IMPLEMENTED_1,
+            (byte)soundTrackId,
+            0x00, // not implemented
             (byte)vibrationPattern,
             (byte)repeatCount,
             (byte)logReactionTime,
@@ -297,7 +284,6 @@ public class BLEController : MonoBehaviour
         SendCommand(TX_COMMAND.OFF_LIGHT, new byte[0], tileId);
     }
 
-    // Method to stop light effect on the tile
     public void StopEffect(SELECT_ITILE tileId)
     {
         SendCommand(TX_COMMAND.STOP_EFFECT, new byte[0], tileId);
@@ -306,8 +292,7 @@ public class BLEController : MonoBehaviour
     public void TriggerLightSoundVibration(
         SIDE_COLORS sideColor,
         TIMEOUT_DELAY timeoutDelay,
-        byte soundTrackId,
-        byte NOT_IMPLEMENTED_1,
+        SOUND_TRACK soundTrackId,
         VIBRATION_PATTERN vibrationPattern,
         REPEAT_COUNT repeatCount,
         LOG_REACTION_TIME logReactionTime,
@@ -323,8 +308,8 @@ public class BLEController : MonoBehaviour
             sideColor.SIDE_5.R, sideColor.SIDE_5.G, sideColor.SIDE_5.B,
             sideColor.SIDE_6.R, sideColor.SIDE_6.G, sideColor.SIDE_6.B,
             (byte)timeoutDelay,
-            soundTrackId,
-            NOT_IMPLEMENTED_1,
+            (byte)soundTrackId,
+            0x00, // not implemented
             (byte)vibrationPattern,
             (byte)repeatCount,
             (byte)logReactionTime,
@@ -333,7 +318,6 @@ public class BLEController : MonoBehaviour
         SendCommand(TX_COMMAND.SUPER_TRIGGER, parameters, tileId);
     }
 
-    // Enable or disable accelerometer shake interrupt
     public void ToggleShakeSensor(
         TOGGLE_SENSOR toggle,
         SELECT_ITILE tileId
@@ -342,7 +326,6 @@ public class BLEController : MonoBehaviour
         SendCommand(TX_COMMAND.ENABLE_DISABLE_ACCEL, new byte[] { (byte)toggle}, tileId);
     }
 
-    // Set threshold for shake interrupt
     public void SetShakeThreshold(
         byte accelerationThreshold,
         SELECT_ITILE tileId
