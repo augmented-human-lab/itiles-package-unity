@@ -75,7 +75,7 @@ void TriggerLight (
 
 ```csharp
 void TriggerSound (
-  byte soundTrackID,
+  SOUND_TRACK soundTrackID,
   REPEAT_COUNT repeatCount,
   LOG_REACTION_TIME logReactionTime,
   TIMEOUT_RESPONSE timeoutResponse,
@@ -95,10 +95,9 @@ void TriggerVibration(
 
 ```csharp
 void TriggerLightSoundVibration(
-  byte redIntensity, byte greenIntensity, byte blueIntensity | SIDE_COLORS sideColor,
+  TILE_COLOR tileColor | SIDE_COLORS sideColor,
   TIMEOUT_DELAY timeoutDelay,
-  byte soundTrackId,
-  byte NOT_IMPLEMENTED_1,
+  SOUND_TRACK soundTrackId,
   VIBRATION_PATTERN vibrationPattern,
   REPEAT_COUNT repeatCount,
   LOG_REACTION_TIME logReactionTime,
