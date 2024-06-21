@@ -357,8 +357,8 @@ public class BLEController : MonoBehaviour
     }
 
     public void GameInProgress(
-        SELECT_ITILE tileId,
-        GAME_STATUS gameStatus
+        GAME_STATUS gameStatus,
+        SELECT_ITILE tileId
     )
     {
         SendCommand(TX_COMMAND.GAME_IN_PROGRESS, new byte[] {(byte)gameStatus }, tileId);

@@ -122,6 +122,23 @@ void ToggleShakeSensor(TOGGLE_SENSOR toggle, SELECT_ITILE tileId)
 void SetShakeThreshold(byte accelerationThreshold, SELECT_ITILE tileId) 
 ```
 
+```csharp
+void ConfirmAssignement(SELECT_ITILE tileId) 
+```
+
+```csharp
+void GameInProgress(GAME_STATUS gameStatus, SELECT_ITILE tileId)
+```
+
+```csharp
+void AssignFeedback(FEEDBACK_STATUS feedbackStatus, TILE_COLOR color, SOUND_TRACK soundTrackId, VIBRATION_PATTERN vibrationPattern, TIMEOUT_DELAY timeoutDelay, SELECT_ITILE tileId)
+```
+
+```csharp
+void GetBattery(SELECT_ITILE tileId)
+```
+
+
 ## Events - Basic (RX Messages from iTile Server)
 
 ```csharp
@@ -147,6 +164,11 @@ PairedITileListReceived(PAIRED_TILES_RESPONSE pairedTilesResponse)
 ```csharp
 // requested online itile details are received from each tile
 OnlineITileStatusReceived(ONLINE_TILES_RESPONSE onlineTilesResponse)
+```
+
+```csharp
+// requested battary status is received from specified tile
+BattaryStatusReceived(ONLINE_TILES_RESPONSE onlineTilesResponse)
 ```
 
 ## Events - Interactions (RX Messages from iTile Server)
