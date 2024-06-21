@@ -39,6 +39,9 @@ public class BLEController : MonoBehaviour
     public delegate void OnlineITileStatusReceivedEventHandler(ONLINE_TILES_RESPONSE online_tile_response);
     public event OnlineITileStatusReceivedEventHandler OnlineITileStatusReceived;
 
+    public delegate void BattaryStatusReceivedEventHandler(BATTARY_STATUS_RESPONSE battary_status_response);
+    public event BattaryStatusReceivedEventHandler BattaryStatusReceived;
+
     #endregion
 
     public static BLEController itile;
@@ -174,6 +177,10 @@ public class BLEController : MonoBehaviour
             case RX_COMMAND.TOUCH:
                 ITileTouched?.Invoke(new TOUCH_RESPONSE(byteMessage));
                 break;
+            case RX_COMMAND.REPLY_BATTERY_LEVEL:
+                BattaryStatusReceived?.Invoke(new BATTARY_STATUS_RESPONSE(byteMessage));
+                break;
+                
         }
     }
 
@@ -340,6 +347,38 @@ public class BLEController : MonoBehaviour
     ) 
     {
         SendCommand(TX_COMMAND.ENABLE_DISABLE_TOUCH, new byte[] { (byte)toggle}, tileId);
+    }
+
+    public void ConfirmAssignement(
+        SELECT_ITILE tileId
+    )
+    {
+        SendCommand(TX_COMMAND.CONFIRM_ASSIGNMENT, new byte[0], tileId);
+    }
+
+    public void GameInProgress(
+        SELECT_ITILE tileId,
+        GAME_STATUS gameStatus
+    )
+    {
+        SendCommand(TX_COMMAND.GAME_IN_PROGRESS, new byte[] {(byte)gameStatus }, tileId);
+    }
+
+    public void AssignFeedback(
+        FEEDBACK_STATUS feedbackStatus,
+        TILE_COLOR color,
+        SOUND_TRACK soundTrackId,
+        VIBRATION_PATTERN vibrationPattern,
+        TIMEOUT_DELAY timeoutDelay,
+        SELECT_ITILE tileId
+    ) {
+        SendCommand(TX_COMMAND.ASSIGN_FEEDBACK, new byte[] {(byte)feedbackStatus, (byte)color.R, color.G, color.B, (byte)soundTrackId, (byte)vibrationPattern, (byte)timeoutDelay }, tileId);
+    }
+
+    public void GetBattery(
+        SELECT_ITILE tileId    
+    ) {
+        SendCommand(TX_COMMAND.GET_BATTERY_LEVEL, new byte[0], tileId);
     }
 
     public void SetVolume(byte[] parameters, SELECT_ITILE tileId) 

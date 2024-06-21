@@ -31,8 +31,13 @@ namespace ITiles {
         ENABLE_DISABLE_ACCEL = 0x18,
         SET_ACCEL_THRESHOLD = 0x19,
         ENABLE_DISABLE_TOUCH = 0x1A,
-        TILE_TIMEOUT = 0x1B
+        TILE_TIMEOUT = 0x1B,
 
+        // UNCATEGORIEZED
+        GET_BATTERY_LEVEL = 0x25,
+        ASSIGN_FEEDBACK = 0x24,
+        GAME_IN_PROGRESS = 0x23,
+        CONFIRM_ASSIGNMENT = 0x09
     }
 
     // [MASTER -> APP] COMMANDS
@@ -47,7 +52,8 @@ namespace ITiles {
         STEP_CHANGE = 0x14,
         SHAKE = 0x15,
         TILE_TIMEOUT = 0x17,
-        END_BYTE = 0xEF
+        END_BYTE = 0xEF,
+        REPLY_BATTERY_LEVEL = 0x26
     }
 
     public class CONFIG_STRINGS {
@@ -183,6 +189,21 @@ namespace ITiles {
     public enum TOGGLE_SENSOR: byte {
         OFF = 0x00,
         ON = 0x01
+    }
+
+    public enum GAME_STATUS : byte { 
+        NOT_IN_GAME = 0x00,
+        IN_GAME = 0x01
+    }
+
+    public enum FEEDBACK_STATUS : byte { 
+        OFF = 0x00,
+        ON = 0x01
+    }
+
+    public enum TILE_TYPE : byte { 
+        WALL_TILE = 0x00,
+        FLOOR_TILE = 0x01
     }
 
     public class ANDROID_ITILE_METHOD {
@@ -373,16 +394,24 @@ namespace ITiles {
 
     public struct ONLINE_TILES_RESPONSE {
         public byte tile_id;
-        public byte battary_lower_byte;
-        public byte battary_upper_byte;
-        public int hardware_version;
-        public int firmware_version;
+        public byte tile_type; // parameter 1
+        public byte[] mac_address; // parameter 2:7
+        public byte battary_lower_byte; // parameter 8
+        public byte battary_upper_byte; // parameter 9
+        public int hardware_version; // parameter 10
+        public int firmware_version; // parameter 11
+        public int assigned_tile_id; // parameter 12
+
         public ONLINE_TILES_RESPONSE(byte[] message) {
             tile_id = message[1];
-            battary_lower_byte = message[4];
-            battary_upper_byte = message[5];
-            hardware_version = Convert.ToInt32(message[6]);
-            firmware_version = Convert.ToInt32(message[7]);
+            tile_type = message[4];
+            mac_address = new byte[6];
+            Array.Copy(message, 5, mac_address, 0, 6);
+            battary_lower_byte = message[11];
+            battary_upper_byte = message[12];
+            hardware_version = Convert.ToInt32(message[13]);
+            firmware_version = Convert.ToInt32(message[14]);
+            assigned_tile_id = message[15];
         }
         public int GetBattaryPower() {
             int BATTARY_MAX = 420;
@@ -399,6 +428,15 @@ namespace ITiles {
         public STEP_CHANGE_RESPONSE(byte[] message) {
             tile_id = message[1];
             step_status = message[3];
+        }
+    }
+
+    public struct BATTARY_STATUS_RESPONSE {
+        public byte battary_lower_byte; 
+        public byte battary_upper_byte;
+        public BATTARY_STATUS_RESPONSE(byte[] message) {
+            battary_lower_byte = message[11];
+            battary_upper_byte = message[12];
         }
     }
 
