@@ -199,9 +199,9 @@ public class BLEController : MonoBehaviour
         SendCommand(TX_COMMAND.QUERY_PAIRED_TILES, new byte[0]);
     }
 
-    public void QueryOnlineTiles()
+    public void QueryOnlineTiles(SELECT_ITILE tileId = SELECT_ITILE.ALL)
     {
-        SendCommand(TX_COMMAND.QUERY_ONLINE_TILES, new byte[0], SELECT_ITILE.ALL);
+        SendCommand(TX_COMMAND.QUERY_ONLINE_TILES, new byte[0], tileId);
     }
 
     public void TriggerLight(

@@ -59,8 +59,8 @@ void QueryPairedTiles()
 
 ```csharp
 // to command each online tile to reply with it's status including battary percentage
-// Subscribe to `OnlineITileStatusReceived` event to receive status details from each of these tiles
-void QueryOnlineTiles()
+// Subscribe to `OnlineITileStatusReceived` event to receive status of given tile (default value is ALL)
+void QueryOnlineTiles(SELECT_ITILE tileID = SELECT_ITILE.ALL)
 ```
 
 ```csharp
