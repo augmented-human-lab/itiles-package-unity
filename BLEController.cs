@@ -148,16 +148,16 @@ public class BLEController : MonoBehaviour
         Debug.Log("BLE Controller: Before Converting to SByte: " + byteCmdString);
 
         // Convert the byte array to sbyte array
-        //sbyte[] sbyteCmd = new sbyte[commandPacket.Length];
-        //for (int i = 0; i < commandPacket.Length; i++)
-        //{
-        //    sbyteCmd[i] = (sbyte)commandPacket[i];
-        //}
+        sbyte[] sbyteCmd = new sbyte[commandPacket.Length];
+        for (int i = 0; i < commandPacket.Length; i++)
+        {
+            sbyteCmd[i] = (sbyte)commandPacket[i];
+        }
 
         // Send the command packet to the BLE device
-        //string sbyteCmdString = string.Join(", ", sbyteCmd);
-        // Debug.Log("BLE Controller: Sending Command to ITiles: " + sbyteCmdString);
-        bleManager.Call("write", commandPacket);
+        string sbyteCmdString = string.Join(", ", sbyteCmd);
+        Debug.Log("BLE Controller: Sending Command to ITiles: " + sbyteCmdString);
+        bleManager.Call("write", sbyteCmd);
     }
 
     private void DecodeMessage(string message) 
