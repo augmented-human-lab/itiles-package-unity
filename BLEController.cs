@@ -130,14 +130,22 @@ public class BLEController : MonoBehaviour
     private void SendCommand(TX_COMMAND command, byte[] parameters, SELECT_ITILE tileId = SELECT_ITILE.MASTER)
     {
         // Command packet format: [Start Byte][Tile ID][Command][Length][Parameters][End Byte]
-        Debug.Log("BLE Controller: Sending Command to ITiles: ");
+        Debug.Log("BLE Controller: Sending Command to ITiles Starts");
         byte[] commandPacket = new byte[5 + parameters.Length];
         commandPacket[0] = (byte)TX_COMMAND.START_BYTE;
+        Debug.Log("BLE Controller: Start Byte: "+ commandPacket[0]);
         commandPacket[1] = (byte)tileId;
+        Debug.Log("BLE Controller: Tile ID: " + commandPacket[1]);
         commandPacket[2] = (byte)command;
+        Debug.Log("BLE Controller: Command: " + commandPacket[2]);
         commandPacket[3] = (byte)parameters.Length;
+        Debug.Log("BLE Controller: Length: " + commandPacket[3]);
+
         Array.Copy(parameters, 0, commandPacket, 4, parameters.Length);
         commandPacket[^1] = (byte)TX_COMMAND.END_BYTE;
+
+        string byteCmdString = string.Join(", ", commandPacket);
+        Debug.Log("BLE Controller: Before Converting to SByte: " + byteCmdString);
 
         // Convert the byte array to sbyte array
         sbyte[] sbyteCmd = new sbyte[commandPacket.Length];
