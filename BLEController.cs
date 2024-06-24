@@ -127,25 +127,19 @@ public class BLEController : MonoBehaviour
     }
 
     // Method to send the specific command with parameters to the BLE device
-    private void SendCommand(TX_COMMAND command, byte[] parameters, SELECT_ITILE tileId = SELECT_ITILE.MASTER)
+    private void SendCommand(TX_COMMAND command, byte[] parameters, SELECT_ITILE tileId = SELECT_ITILE.ALL)
     {
         // Command packet format: [Start Byte][Tile ID][Command][Length][Parameters][End Byte]
-        Debug.Log("BLE Controller: Sending Command to ITiles Starts");
         byte[] commandPacket = new byte[5 + parameters.Length];
         commandPacket[0] = (byte)TX_COMMAND.START_BYTE;
-        Debug.Log("BLE Controller: Start Byte: "+ commandPacket[0]);
         commandPacket[1] = (byte)tileId;
-        Debug.Log("BLE Controller: Tile ID: " + commandPacket[1]);
         commandPacket[2] = (byte)command;
-        Debug.Log("BLE Controller: Command: " + commandPacket[2]);
         commandPacket[3] = (byte)parameters.Length;
-        Debug.Log("BLE Controller: Length: " + commandPacket[3]);
 
         Array.Copy(parameters, 0, commandPacket, 4, parameters.Length);
         commandPacket[^1] = (byte)TX_COMMAND.END_BYTE;
 
         string byteCmdString = string.Join(", ", commandPacket);
-        Debug.Log("BLE Controller: Before Converting to SByte: " + byteCmdString);
 
         // Convert the byte array to sbyte array
         sbyte[] sbyteCmd = new sbyte[commandPacket.Length];
@@ -156,24 +150,19 @@ public class BLEController : MonoBehaviour
 
         // Send the command packet to the BLE device
         string sbyteCmdString = string.Join(", ", sbyteCmd);
-        Debug.Log("BLE Controller: Sending Command to ITiles: " + sbyteCmdString);
         bleManager.Call("write", sbyteCmd);
     }
 
     private void DecodeMessage(string message) 
     {
         byte[] byteMessage = HexStringToByteArray(message);
-        Debug.Log("BLE Controller: Decoding message: " + message);
-        Debug.Log("BLE Controller: Detected command: " + byteMessage[2]);
         // Command packet format: [Start Byte][Tile ID][Command][Length][Parameters][End Byte]
 
         switch ((RX_COMMAND)byteMessage[2]) {
             case RX_COMMAND.REPLY_PAIRED_TILES:
-                Debug.Log("BLE Controller: REPLY_PAIRED_TILES");
                 PairedITileListReceived?.Invoke(new PAIRED_TILES_RESPONSE(byteMessage));
                 break;
             case RX_COMMAND.REPLY_ONLINE_TILES:
-                Debug.Log("BLE Controller: REPLY_ONLINE_TILES");
                 OnlineITileStatusReceived?.Invoke(new ONLINE_TILES_RESPONSE(byteMessage));
                 break;
             case RX_COMMAND.SHAKE:
@@ -192,7 +181,6 @@ public class BLEController : MonoBehaviour
                 ITileTouched?.Invoke(new TOUCH_RESPONSE(byteMessage));
                 break;
             case RX_COMMAND.REPLY_BATTERY_LEVEL:
-                Debug.Log("BLE Controller: REPLY_BATTERY_LEVEL");
                 BattaryStatusReceived?.Invoke(new BATTARY_STATUS_RESPONSE(byteMessage));
                 break;
                 

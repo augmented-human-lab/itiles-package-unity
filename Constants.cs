@@ -7,7 +7,7 @@ namespace ITiles {
     public enum TX_COMMAND: byte {
 
 
-        START_BYTE = 0x7E,
+        START_BYTE = 0xAA,
         END_BYTE = 0xEF,
 
         // SETUP
@@ -72,8 +72,8 @@ namespace ITiles {
         DISCONNECTING = 3
     }
 
-    public enum SELECT_ITILE: byte {
-        MASTER = 0x00,
+    public enum SELECT_ITILE : byte
+    {
         I = 0x01,
         II = 0x02,
         III = 0x03,
@@ -81,7 +81,16 @@ namespace ITiles {
         V = 0x05,
         VI = 0x06,
         VII = 0x07,
-        ALL = 0xff
+        VIII = 0x08,
+        IX = 0x09,
+        X = 0x0A,
+        XI = 0x0B,
+        XII = 0x0C,
+        XIII = 0x0D,
+        XIV = 0x0E,
+        XV = 0x0F,
+        XVI = 0x10,
+        ALL = 0xFF
     }
 
     public enum TILE_SIDE: byte
