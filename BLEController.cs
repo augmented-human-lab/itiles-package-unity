@@ -39,8 +39,8 @@ public class BLEController : MonoBehaviour
     public delegate void OnlineITileStatusReceivedEventHandler(ONLINE_TILES_RESPONSE online_tile_response);
     public event OnlineITileStatusReceivedEventHandler OnlineITileStatusReceived;
 
-    public delegate void BattaryStatusReceivedEventHandler(BATTARY_STATUS_RESPONSE battary_status_response);
-    public event BattaryStatusReceivedEventHandler BattaryStatusReceived;
+    public delegate void BatteryStatusReceivedEventHandler(BATTERY_STATUS_RESPONSE battery_status_response);
+    public event BatteryStatusReceivedEventHandler BatteryStatusReceived;
 
     #endregion
 
@@ -140,6 +140,7 @@ public class BLEController : MonoBehaviour
         commandPacket[^1] = (byte)TX_COMMAND.END_BYTE;
 
         string byteCmdString = string.Join(", ", commandPacket);
+        Console.WriteLine("Sending message to iTile: " + byteCmdString);
 
         // Convert the byte array to sbyte array
         sbyte[] sbyteCmd = new sbyte[commandPacket.Length];
@@ -155,6 +156,7 @@ public class BLEController : MonoBehaviour
 
     private void DecodeMessage(string message) 
     {
+        Console.WriteLine("Message received from iTile: " + message);
         byte[] byteMessage = HexStringToByteArray(message);
         // Command packet format: [Start Byte][Tile ID][Command][Length][Parameters][End Byte]
 
@@ -181,7 +183,7 @@ public class BLEController : MonoBehaviour
                 ITileTouched?.Invoke(new TOUCH_RESPONSE(byteMessage));
                 break;
             case RX_COMMAND.REPLY_BATTERY_LEVEL:
-                BattaryStatusReceived?.Invoke(new BATTARY_STATUS_RESPONSE(byteMessage));
+                BatteryStatusReceived?.Invoke(new BATTERY_STATUS_RESPONSE(byteMessage));
                 break;
                 
         }

@@ -405,8 +405,8 @@ namespace ITiles {
         public byte tile_id;
         public byte tile_type; // parameter 1
         public byte[] mac_address; // parameter 2:7
-        public byte battary_lower_byte; // parameter 8
-        public byte battary_upper_byte; // parameter 9
+        public byte battery_lower_byte; // parameter 8
+        public byte battery_upper_byte; // parameter 9
         public int hardware_version; // parameter 10
         public int firmware_version; // parameter 11
         public int assigned_tile_id; // parameter 12
@@ -416,18 +416,18 @@ namespace ITiles {
             tile_type = message[4];
             mac_address = new byte[6];
             Array.Copy(message, 5, mac_address, 0, 6);
-            battary_lower_byte = message[11];
-            battary_upper_byte = message[12];
+            battery_lower_byte = message[11];
+            battery_upper_byte = message[12];
             hardware_version = Convert.ToInt32(message[13]);
             firmware_version = Convert.ToInt32(message[14]);
             assigned_tile_id = message[15];
         }
-        public int GetBattaryPower() {
-            int BATTARY_MAX = 420;
-            int BATTARY_MIN = 330;
-            int BATTARY_NOW = (battary_upper_byte << 8) | battary_lower_byte;
-            int BATTARY_PERCENTAGE = (BATTARY_NOW - BATTARY_MIN) * 100 / (BATTARY_MAX - BATTARY_MIN);
-            return BATTARY_PERCENTAGE;
+        public int GetBatteryPower() {
+            int BATTERY_MAX = 420;
+            int BATTERY_MIN = 330;
+            int BATTERY_NOW = (battery_upper_byte << 8) | battery_lower_byte;
+            int BATTERY_PERCENTAGE = (BATTERY_NOW - BATTERY_MIN) * 100 / (BATTERY_MAX - BATTERY_MIN);
+            return BATTERY_PERCENTAGE;
         }
     }
 
@@ -440,12 +440,12 @@ namespace ITiles {
         }
     }
 
-    public struct BATTARY_STATUS_RESPONSE {
-        public byte battary_lower_byte; 
-        public byte battary_upper_byte;
-        public BATTARY_STATUS_RESPONSE(byte[] message) {
-            battary_lower_byte = message[11];
-            battary_upper_byte = message[12];
+    public struct BATTERY_STATUS_RESPONSE {
+        public byte battery_lower_byte; 
+        public byte battery_upper_byte;
+        public BATTERY_STATUS_RESPONSE(byte[] message) {
+            battery_lower_byte = message[11];
+            battery_upper_byte = message[12];
         }
     }
 
