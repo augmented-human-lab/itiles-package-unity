@@ -32,6 +32,7 @@ namespace ITiles {
         SET_ACCEL_THRESHOLD = 0x19,
         ENABLE_DISABLE_TOUCH = 0x1A,
         TILE_TIMEOUT = 0x1B,
+        CLEAR_MAC_LIST = 0x0A,
 
         // UNCATEGORIEZED
         GET_BATTERY_LEVEL = 0x25,

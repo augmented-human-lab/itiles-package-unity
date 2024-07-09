@@ -199,6 +199,10 @@ public class BLEController : MonoBehaviour
         SendCommand(TX_COMMAND.UNPAIR, new byte[0], tileID);
     }
 
+    public void ClearMacList() {
+        SendCommand(TX_COMMAND.CLEAR_MAC_LIST, new byte[0]);
+    }
+
     public void QueryPairedTiles()
     {
         SendCommand(TX_COMMAND.QUERY_PAIRED_TILES, new byte[0]);

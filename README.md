@@ -52,6 +52,11 @@ void UnpairTile(SELECT_ITILE tileID)
 ```
 
 ```csharp
+// to clear the array of tile mac address and deregister tiles from ESPNOW
+void ClearMacList()
+```
+
+```csharp
 // to receive list of paired tile Ids 
 // Subscribe to `PairedITileListReceived` event to receive paired itile id list
 void QueryPairedTiles()
