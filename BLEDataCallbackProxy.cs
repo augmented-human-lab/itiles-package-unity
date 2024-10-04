@@ -11,6 +11,7 @@ public class BLEDataCallbackProxy : AndroidJavaProxy, BLEDataCallback
 
     public void onDataReceived(string value)
     {
+        Debug.Log("Unity Wrapper: Interface: onCharacteristicChanged");
         targetMonoBehaviour.ReceiveData(value);
     }
 
