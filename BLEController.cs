@@ -89,7 +89,6 @@ public class BLEController : MonoBehaviour
 
     public void ReceiveData(string value) 
     {
-        Debug.Log("BLE Controller: Receive Data");
         DataReceived?.Invoke(value);
         DecodeMessage(value);
     }
@@ -157,7 +156,6 @@ public class BLEController : MonoBehaviour
 
     private void DecodeMessage(string message) 
     {
-        Debug.Log("Message received from iTile: " + message);
         byte[] byteMessage = HexStringToByteArray(message);
         // Command packet format: [Start Byte][Tile ID][Command][Length][Parameters][End Byte]
 
