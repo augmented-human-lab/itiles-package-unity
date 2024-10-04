@@ -1,6 +1,6 @@
 {
     "name": "com.ahlab.itiles",
-    "version": "1.1.11",
+    "version": "1.1.12",
     "displayName": "iTiles Connector",
     "description": "This package provides the basic functionality to connect with iTiles Bluetooth devices",
     "unity": "2022.3",

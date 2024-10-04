@@ -89,6 +89,7 @@ public class BLEController : MonoBehaviour
 
     public void ReceiveData(string value) 
     {
+        Debug.Log("BLE Controller: Receive Data");
         DataReceived?.Invoke(value);
         DecodeMessage(value);
     }
