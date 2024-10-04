@@ -157,7 +157,7 @@ public class BLEController : MonoBehaviour
 
     private void DecodeMessage(string message) 
     {
-        Console.WriteLine("Message received from iTile: " + message);
+        Debug.Log("Message received from iTile: " + message);
         byte[] byteMessage = HexStringToByteArray(message);
         // Command packet format: [Start Byte][Tile ID][Command][Length][Parameters][End Byte]
 
